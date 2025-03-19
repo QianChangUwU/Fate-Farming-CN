@@ -57,19 +57,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: Create new tag
-        id: create_tag
-        run: |
-          TAG="v1.0.0-$(date +%Y%m%d%H%M%S)"  # 基于当前时间生成标签
-          echo "New tag: $TAG"
-          echo "TAG=$TAG" >> $GITHUB_ENV  # 将标签设置为环境变量
-          git tag $TAG  # 创建本地标签
-          git push origin $TAG  # 推送标签到远程仓库
-      
       - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.TAG }}  # 使用动态生成的标签
-          generate_release_notes: true
+        id: create_release
+        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+            tag_name: v1.0.0  # 指定标签
+            release_name: Release v1.0.0  # Release 名称
+            draft: false
+            prerelease: false
+            generate_release_notes: true
+      
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+            upload_url: ${{ steps.create_release.outputs.upload_url }}  # 获取上传 URL
+            asset_path: ./release.zip  # 要上传的文件
+            asset_name: release.zip  # 文件名称
+            asset_content_type: application/zip  # 文件类型
