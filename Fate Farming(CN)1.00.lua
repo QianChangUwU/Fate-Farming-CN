@@ -84,7 +84,7 @@ Food = ""                                      --如果不想用任何食物，�
 Potion = ""                                    --如果不想用任何药就将 "" 内留空.
 ShouldSummonChocobo                 = true          --是否召唤陆行鸟？
     ResummonChocoboTimeLeft         = 3 * 60        --如果陆行鸟剩余时间少于这个秒数，则重新召唤，以免在FATE中途消失。
-    ChocoboStance                   = "Healer"      --陆行鸟选项: Follow/Free/Defender/Healer/Attacker
+    ChocoboStance                   = "治疗战术"      --陆行鸟选项: 跟随/自由战术/防护战术/治疗战术/进攻战术
     ShouldAutoBuyGysahlGreens       = true          ----如果野菜用完了，自动从利姆萨·罗敏萨的商人处购买99个。
 MountToUse                          = "随机飞行坐骑"       --在FATE之间飞行时使用的坐骑
 FatePriority                        = {"DistanceTeleport", "Progress", "DistanceTeleport", "Bonus", "TimeLeft", "Distance"}
@@ -110,7 +110,7 @@ RotationPlugin                      = "RSR"         --选项: RSR/BMR/VBM/Wrath/
     RotationAoePreset               = ""            --AOE + Buff策略的预设。
     RotationHoldBuffPreset          = ""            --当进度达到XX%时，保留2分钟爆发的预设。
     PercentageToHoldBuff            = 65            --理想情况下，你希望充分利用你的增益，高于70%仍然会浪费几秒，如果进度太快。
-DodgingPlugin                       = "BMR"         --选项: BMR/VBM/None。自动躲避插件，如果你的RotationPlugin是BMR/VBM，则此设置将被覆盖。
+DodgingPlugin                       = "VBM"         --选项: BMR/VBM/None。自动躲避插件，如果你的RotationPlugin是BMR/VBM，则此设置将被覆盖。
 
 IgnoreForlorns                      = false         --无视迷失少女
     IgnoreBigForlornOnly            = false         --仅忽略迷失者
@@ -1420,7 +1420,7 @@ function FlyBackToAetheryte()
         end
 
         if GetCharacterCondition(CharacterCondition.flying) then
-            yield("/ac dismount") -- land but don't actually dismount, to avoid running chocobo timer
+            yield("/mount") -- land but don't actually dismount, to avoid running chocobo timer
         elseif GetCharacterCondition(CharacterCondition.mounted) then
             State = CharacterState.ready
             LogInfo("[FATE] State Change: Ready")
@@ -1465,7 +1465,7 @@ end
 
 function Dismount()
     if GetCharacterCondition(CharacterCondition.flying) then
-        yield('/ac dismount')
+        yield('/mount')
 
         local now = os.clock()
         if now - LastStuckCheckTime > 1 then
@@ -1489,7 +1489,7 @@ function Dismount()
             LastStuckCheckPosition = {x=x, y=y, z=z}
         end
     elseif GetCharacterCondition(CharacterCondition.mounted) then
-        yield('/ac dismount')
+        yield('/mount')
     end
 end
 
@@ -1812,7 +1812,7 @@ function SummonChocobo()
         if GetItemCount(4868) > 0 then
             yield("/item 基萨尔野菜")
             yield("/wait 3")
-            yield('/cac "'..ChocoboStance..' stance"')
+            yield('/cac "'..ChocoboStance..'"')
         elseif ShouldAutoBuyGysahlGreens then
             State = CharacterState.autoBuyGysahlGreens
             LogInfo("[FATE] State Change: AutoBuyGysahlGreens")
@@ -2766,7 +2766,7 @@ if IsInFate() and GetFateProgress(GetNearestFate()) < 100 then
 end
 
 if ShouldSummonChocobo and GetBuddyTimeRemaining() > 0 then
-    yield('/cac "'..ChocoboStance..' stance"')
+    yield('/cac "'..ChocoboStance..'"')
 end
 
 while not StopScript do
