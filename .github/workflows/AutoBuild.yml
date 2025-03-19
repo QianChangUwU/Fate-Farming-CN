@@ -15,66 +15,35 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # 1. 检出代码
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      # 2. 设置版本号
       - name: Set version
         id: set_version
-        run: echo "VERSION=1.0.0" >> $GITHUB_ENV  # 设置 VERSION 环境变量
-      - name: Use version
-        run: echo "Version is ${{ env.VERSION }}"  # 访问 VERSION 变量
-      
-      # 2. 打包代码为 ZIP 文件
-      - name: Create ZIP archive
         run: |
-          zip -r release.zip . -x '.git/*' -x '.github/*' 
-          echo "ZIP file created: release.zip"
-
-      # 3. 获取当前版本号（可选）
-      - name: Get version
-        id: get_version
-        run: |
-          echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV  # 获取最新标签作为版本号
+          # 获取最新标签，如果不存在则使用默认值 1.0.0
+          VERSION=$(git describe --tags --abbrev=0 || echo "1.0.0")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Using version: $VERSION"
 
+      # 3. 打包代码为 ZIP 文件
+      - name: Create ZIP archive
+        run: |
+          zip -r release.zip . -x '.git/*' -x '.github/*'
+          echo "ZIP file created: release.zip"
+
       # 4. 创建 GitHub Release 并上传 ZIP 文件
-      - name: Upload to Release
+      - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v1
         with:
           files: release.zip  # 上传的 ZIP 文件
-          tag_name: ${{ env.VERSION }}  # 使用标签作为 Release 版本号
+          tag_name: ${{ env.VERSION }}  # 使用 VERSION 变量作为标签
           generate_release_notes: true  # 自动生成 Release 说明
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 提供的 token
-      
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-            tag_name: v1.0.0  # 指定标签
-            release_name: Release v1.0.0  # Release 名称
-            draft: false
-            prerelease: false
-            generate_release_notes: true
-      
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }}  # 获取上传 URL
-            asset_path: ./release.zip  # 要上传的文件
-            asset_name: release.zip  # 文件名称
-            asset_content_type: application/zip  # 文件类型
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
