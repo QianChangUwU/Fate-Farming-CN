@@ -27,8 +27,7 @@ jobs:
       - name: Set version
         id: set_version
         run: |
-          # 获取最新标签，如果不存在则使用默认值 1.0.0
-          VERSION=$(git describe --tags --abbrev=0 || echo "1.0.0")
+          VERSION=$(git describe --tags --abbrev=0 || echo "1.00")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Using version: $VERSION"
 
