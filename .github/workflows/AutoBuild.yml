@@ -22,15 +22,34 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # 1. 检出代码
       - uses: actions/checkout@v4
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Set version
+        id: set_version
+        run: echo "VERSION=1.0.0" >> $GITHUB_ENV  # 设置 VERSION 环境变量
+      - name: Use version
+        run: echo "Version is ${{ env.VERSION }}"  # 访问 VERSION 变量
+      
+      # 2. 打包代码为 ZIP 文件
+      - name: Create ZIP archive
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          zip -r release.zip . -x '.git/*' -x '.github/*' 
+          echo "ZIP file created: release.zip"
+
+      # 3. 获取当前版本号（可选）
+      - name: Get version
+        id: get_version
+        run: |
+          echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV  # 获取最新标签作为版本号
+          echo "Using version: $VERSION"
+
+      # 4. 创建 GitHub Release 并上传 ZIP 文件
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release.zip  # 上传的 ZIP 文件
+          tag_name: ${{ env.VERSION }}  # 使用标签作为 Release 版本号
+          generate_release_notes: true  # 自动生成 Release 说明
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 提供的 token
