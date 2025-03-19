@@ -47,3 +47,9 @@ jobs:
           generate_release_notes: true  # 自动生成 Release 说明
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate unique tag
+        id: generate_tag
+        run: |
+            TAG="v1.0.0-$(date +%Y%m%d%H%M%S)"
+            echo "TAG=$TAG" >> $GITHUB_ENV
+            echo "Generated tag: $TAG"
