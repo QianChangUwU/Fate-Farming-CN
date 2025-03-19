@@ -43,8 +43,9 @@ Fate Farming的部分功能：
 
 ## 设置
 ### 脚本设置
-包含较多设置，可以调整双色宝石的受益大小。设置会随着版本更新而更新，所以更新时记得回来看看！
-![SND Basics](Settings/Setting1.png)(Settings/Setting2.png)
+包含较多设置，设置会随着版本更新而更新，所以更新时记得回来看看！
+![SND Basics](Settings/Setting1.png)
+![SND Basics](Settings/Setting2.png)
 
 ### YesAlready设置
 | | |
