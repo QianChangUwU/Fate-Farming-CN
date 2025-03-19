@@ -22,7 +22,7 @@ Fate Farming的部分功能：
 ## 相关依赖插件安装
 ### 必要插件
 | 插件名 | 作用 | 仓库 |
-|-------------|---------|------|
+|-------------|-------------|------|
 | Something Need Doing [Expanded Edition] | 主插件 | https://puni.sh/api/repository/croizat |
 | VNavmesh | 部署路径和移动 | https://puni.sh/api/repository/veyn |
 | RotationSolver Reborn | 选中并攻击 | https://raw.githubusercontent.com/FFXIV-CombatReborn/CombatRebornRepo/main/pluginmaster.json |
