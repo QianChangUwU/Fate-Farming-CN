@@ -19,36 +19,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 检出代码
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # 2. 设置版本号
-      - name: Set version
-        id: set_version
-        run: |
-          VERSION=$(git describe --tags --abbrev=0 || echo "1.00")
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "Using version: $VERSION"
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
 
-      # 3. 打包代码为 ZIP 文件
-      - name: Create ZIP archive
-        run: |
-          zip -r release.zip . -x '.git/*' -x '.github/*'
-          echo "ZIP file created: release.zip"
-
-      # 4. 创建 GitHub Release 并上传 ZIP 文件
-      - name: Create Release and Upload Asset
-        uses: softprops/action-gh-release@v1
-        with:
-          files: release.zip  # 上传的 ZIP 文件
-          tag_name: ${{ env.VERSION }}  # 使用 VERSION 变量作为标签
-          generate_release_notes: true  # 自动生成 Release 说明
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Generate unique tag
-        id: generate_tag
-        run: |
-            TAG="v1.00-$(date +%Y%m%d%H%M%S)"
-            echo "TAG=$TAG" >> $GITHUB_ENV
-            echo "Generated tag: $TAG"
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release-v1.0.0.tar.gz
+        asset_name: release-v1.0.0.tar.gz
+        asset_content_type: application/gzip
