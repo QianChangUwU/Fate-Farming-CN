@@ -19,6 +19,9 @@ Fate Farming的部分功能：
 - 可能会有bug，如果出现了bug请创建一个新的issues
 - **※仅负责修复本地化错误，不负责逻辑代码bug修复※**
 
+## 注意，一定要将飞行操作类型改成以下类型
+![Fly](Settings/Fly.png)
+
 ## New to Something Need Doing (SND)
 ![SND Basics](Settings/SND.png)
 
