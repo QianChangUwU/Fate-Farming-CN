@@ -53,3 +53,23 @@ jobs:
           generate_release_notes: true  # 自动生成 Release 说明
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 提供的 token
+      
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Create new tag
+        id: create_tag
+        run: |
+          TAG="v1.0.0-$(date +%Y%m%d%H%M%S)"  # 基于当前时间生成标签
+          echo "New tag: $TAG"
+          echo "TAG=$TAG" >> $GITHUB_ENV  # 将标签设置为环境变量
+          git tag $TAG  # 创建本地标签
+          git push origin $TAG  # 推送标签到远程仓库
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG }}  # 使用动态生成的标签
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
