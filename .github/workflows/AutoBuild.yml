@@ -50,6 +50,6 @@ jobs:
       - name: Generate unique tag
         id: generate_tag
         run: |
-            TAG="v1.0.0-$(date +%Y%m%d%H%M%S)"
+            TAG="v1.00-$(date +%Y%m%d%H%M%S)"
             echo "TAG=$TAG" >> $GITHUB_ENV
             echo "Generated tag: $TAG"
