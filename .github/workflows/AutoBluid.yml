@@ -22,10 +22,11 @@ jobs:
       - name: Generate unique tag
         id: generate_tag
         run: |
+          VERSION = 1.01
           export TZ="Asia/Shanghai"  # 设置时区为 UTC+8（北京时间）
           CURRENT_DATE=$(date +%Y%m%d)  # 获取当前日期，格式为年月日
           CURRENT_TIME=$(date +%H%M%S)  # 获取当前时间，格式为小时分钟秒
-          TAG="Fate_Farming_CN特化版_1.00_${CURRENT_DATE}_${CURRENT_TIME}"  # 生成自定义标签，包含日期和时间
+          TAG="Fate_Farming_CN特化版_${VERSION}_${CURRENT_DATE}_${CURRENT_TIME}"  # 生成自定义标签，包含日期和时间
           echo "TAG=$TAG" >> $GITHUB_ENV  # 将 TAG 设置为环境变量
           echo "Generated tag: $TAG"
 
