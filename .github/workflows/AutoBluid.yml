@@ -16,12 +16,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. 生成唯一标签（TAG 和 Release 名称一致）
+      # 2. 生成唯一标签（包含日期和时间）
       - name: Generate unique tag
         id: generate_tag
         run: |
           CURRENT_DATE=$(date +%Y%m%d)  # 获取当前日期，格式为年月日
-          TAG="Fate_Farming_CN特化版_1.00_$CURRENT_DATE"  # 生成自定义标签
+          CURRENT_TIME=$(date +%H_%M_%S)  # 获取当前时间，格式为小时分钟秒
+          TAG="Fate_Farming_CN特化版_1.00_${CURRENT_DATE}_${CURRENT_TIME}"  # 生成自定义标签，包含日期和时间
           echo "TAG=$TAG" >> $GITHUB_ENV  # 将 TAG 设置为环境变量
           echo "Generated tag: $TAG"
 
