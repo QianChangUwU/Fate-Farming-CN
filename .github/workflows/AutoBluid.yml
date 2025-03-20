@@ -32,7 +32,7 @@ jobs:
       # 4. 打包代码为 ZIP 文件
       - name: Create ZIP archive
         run: |
-          ZIP_NAME="Fate_Farming_CN特化版_1.00_${{ env.TAG }}.zip"  # 动态生成 ZIP 文件名
+          ZIP_NAME="${{ env.TAG }}.zip"  # 动态生成 ZIP 文件名
           zip -r "$ZIP_NAME" . -x '.git/*' -x '.github/*'
           echo "ZIP file created: $ZIP_NAME"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV  # 将 ZIP 文件名设置为环境变量
