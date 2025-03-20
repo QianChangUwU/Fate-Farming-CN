@@ -1,36 +1,41 @@
-# This is a basic workflow to help you get started with Actions
+name: AutoBuild
 
-name: AutoBluid
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      # 1. 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      # 2. 生成唯一标签
+      - name: Generate unique tag
+        id: generate_tag
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          TAG="v1.0.0-$(date +%Y%m%d%H%M%S)"  # 基于时间生成唯一标签
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "Generated tag: $TAG"
+
+      # 3. 打包代码为 ZIP 文件
+      - name: Create ZIP archive
+        run: |
+          zip -r release.zip . -x '.git/*' -x '.github/*'
+          echo "ZIP file created: release.zip"
+
+      # 4. 创建 GitHub Release 并上传 ZIP 文件
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release.zip  # 上传的 ZIP 文件
+          tag_name: ${{ env.TAG }}  # 使用动态生成的标签
+          generate_release_notes: true  # 自动生成 Release 说明
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
