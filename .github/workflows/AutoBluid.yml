@@ -21,7 +21,7 @@ jobs:
         id: generate_tag
         run: |
           CURRENT_DATE=$(date +%Y%m%d)  # 获取当前日期，格式为年月日
-          TAG="Fate Farming(CN特化版)v1.00+$CURRENT_DATE"  # 生成自定义标签
+          TAG="Fate_Farming_CN_1.00+$CURRENT_DATE"  # 生成自定义标签
           echo "TAG=$TAG" >> $GITHUB_ENV  # 将 TAG 设置为环境变量
           echo "Generated tag: $TAG"
 
