@@ -9,7 +9,6 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,7 +29,32 @@ jobs:
           echo "TAG=$TAG" >> $GITHUB_ENV  # 将 TAG 设置为环境变量
           echo "Generated tag: $TAG"
 
-      # 3. 打包代码为 ZIP 文件
+      # 3. 删除具有相同日期或更早日期的旧 Release 文件
+      - name: Delete old releases with the same or earlier date
+        run: |
+          export TZ="Asia/Shanghai"  # 设置时区为 UTC+8（北京时间）
+          CURRENT_DATE=$(date +%Y%m%d)  # 获取当前日期，格式为年月日
+
+          # 获取所有 Release 的标签
+          RELEASES=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases" | jq -r '.[].tag_name')
+
+          # 遍历所有 Release 标签
+          for TAG_NAME in $RELEASES; do
+            # 提取标签中的日期部分
+            RELEASE_DATE=$(echo "$TAG_NAME" | grep -oP '\d{8}')
+
+            # 如果 Release 日期小于或等于当前日期，则删除该 Release
+            if [[ "$RELEASE_DATE" && "$RELEASE_DATE" -le "$CURRENT_DATE" ]]; then
+              echo "Deleting release with tag: $TAG_NAME"
+              RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME" | jq '.id')
+              curl -s -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID"
+            fi
+          done
+
+      # 4. 打包代码为 ZIP 文件
       - name: Create ZIP archive
         run: |
           ZIP_NAME="${{ env.TAG }}.zip"  # 动态生成 ZIP 文件名
@@ -38,7 +62,7 @@ jobs:
           echo "ZIP file created: $ZIP_NAME"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV  # 将 ZIP 文件名设置为环境变量
 
-      # 4. 创建 GitHub Release 并上传 ZIP 文件
+      # 5. 创建 GitHub Release 并上传 ZIP 文件
       - name: Create Release and Upload Asset
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -50,7 +74,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 5. 获取下载次数并更新 Release 描述
+      # 6. 获取下载次数并更新 Release 描述
       - name: Update Release Description with Download Count
         run: |
           # 获取 Release ID
