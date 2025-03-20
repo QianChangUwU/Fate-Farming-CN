@@ -20,7 +20,7 @@ jobs:
       - name: Extract version from file
         id: extract_version
         run: |
-          VERSION=$(grep -oP 'Fate Farming\(CN\)\K\d+\.\d+' Fate Farming\(CN\)1.00.lua)  # 提取版本号
+          VERSION=$(grep -oP 'Fate Farming\(CN\)\K\d+\.\d+' "Fate Farming(CN)1.00.lua")  # 使用引号包裹文件名
           echo "Extracted version: $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_ENV  # 将版本号设置为环境变量
 
@@ -41,7 +41,7 @@ jobs:
       - name: Create ZIP archive
         run: |
           ZIP_NAME="Fate_Farming_CN特化版_${{ env.TAG }}.zip"  # 动态生成 ZIP 文件名
-          zip -r $ZIP_NAME . -x '.git/*' -x '.github/*'
+          zip -r "$ZIP_NAME" . -x '.git/*' -x '.github/*'
           echo "ZIP file created: $ZIP_NAME"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV  # 将 ZIP 文件名设置为环境变量
 
