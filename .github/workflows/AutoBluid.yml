@@ -22,7 +22,7 @@ jobs:
       - name: Generate unique tag
         id: generate_tag
         run: |
-          VERSION = 1.01
+          VERSION = "1.01"
           export TZ="Asia/Shanghai"  # 设置时区为 UTC+8（北京时间）
           CURRENT_DATE=$(date +%Y%m%d)  # 获取当前日期，格式为年月日
           CURRENT_TIME=$(date +%H%M%S)  # 获取当前时间，格式为小时分钟秒
