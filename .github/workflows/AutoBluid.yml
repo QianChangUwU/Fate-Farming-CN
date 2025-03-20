@@ -12,37 +12,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set tag
-        id: set_tag
-        run: echo "TAG=v1.0.0" >> $GITHUB_ENV  # 设置 TAG 环境变量
-
-      - name: Use tag
-        run: echo "Tag is ${{ env.TAG }}"  # 访问 TAG 变量
-        
       # 1. 检出代码
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. 生成唯一标签
+      # 2. 生成唯一标签（TAG 和 Release 名称一致）
       - name: Generate unique tag
         id: generate_tag
         run: |
-          TAG="v1.0.0-$(date +%Y%m%d%H%M%S)"  # 基于时间生成唯一标签
-          echo "TAG=$TAG" >> $GITHUB_ENV
+          CURRENT_DATE=$(date +%Y%m%d)  # 获取当前日期，格式为年月日
+          TAG="Fate Farming(CN特化版)v1.00+$CURRENT_DATE"  # 生成自定义标签
+          echo "TAG=$TAG" >> $GITHUB_ENV  # 将 TAG 设置为环境变量
           echo "Generated tag: $TAG"
 
-      # 3. 打包代码为 ZIP 文件
+      # 3. 使用生成的 TAG
+      - name: Use tag
+        run: echo "Tag is ${{ env.TAG }}"  # 访问 TAG 变量
+
+      # 4. 打包代码为 ZIP 文件
       - name: Create ZIP archive
         run: |
           zip -r release.zip . -x '.git/*' -x '.github/*'
           echo "ZIP file created: release.zip"
 
-      # 4. 创建 GitHub Release 并上传 ZIP 文件
+      # 5. 创建 GitHub Release 并上传 ZIP 文件
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v1
         with:
           files: release.zip  # 上传的 ZIP 文件
           tag_name: ${{ env.TAG }}  # 使用动态生成的标签
+          name: ${{ env.TAG }}  # Release 名称与 TAG 一致
           generate_release_notes: true  # 自动生成 Release 说明
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
