@@ -80,7 +80,8 @@ This Plugins are Optional and not needed unless you have it enabled in the setti
 ]]
 
 --FATE前设置
-MaxRunTimeInHours                   = 2  -- 设置脚本运行的最大时间为2小时
+AfterScriptStopTP                   = "部队房屋" -- 脚本达到设置的时间后回哪儿，部队房屋/个人房屋/利姆萨·利姆萨/乌尔达哈/格里达尼亚
+MaxRunTimeInHours                   = 2  -- 设置脚本运行的最大时间
 ScriptStartTime                     = os.clock()  -- 记录脚本开始运行的时间
 Food = ""                                      --如果不想用任何食物，就将 "" 内留空. 如果想自动使用HQ食物就添加 <hq> 在食物后面，例如 "烧烤暗色茄子 <hq>"
 Potion = ""                                    --如果不想用任何药就将 "" 内留空.
@@ -2779,6 +2780,7 @@ while not StopScript do
     -- 如果运行时间超过设定的最大时间，则输出指令并停止脚本
     if currentRunTimeInHours >= MaxRunTimeInHours then
         yield("/echo [FATE] 脚本已运行超过 " .. MaxRunTimeInHours .. " 小时，停止脚本。")
+        yield("/tp "..AfterScriptStopTP.."")
         yield("/snd stop")
     end
 
