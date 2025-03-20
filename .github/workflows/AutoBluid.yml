@@ -16,30 +16,40 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. 生成唯一标签（符合 GitHub 要求的格式）
+      # 2. 从 Fate Farming(CN)1.00.lua 文件中提取版本号
+      - name: Extract version from file
+        id: extract_version
+        run: |
+          VERSION=$(grep -oP 'Fate Farming\(CN\)\K\d+\.\d+' Fate Farming\(CN\)1.00.lua)  # 提取版本号
+          echo "Extracted version: $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV  # 将版本号设置为环境变量
+
+      # 3. 生成唯一标签（符合 GitHub 要求的格式）
       - name: Generate unique tag
         id: generate_tag
         run: |
           CURRENT_DATE=$(date +%Y%m%d)  # 获取当前日期，格式为年月日
-          TAG="v1.0.0-$CURRENT_DATE"  # 生成符合 GitHub 要求的标签
+          TAG="v${{ env.VERSION }}-$CURRENT_DATE"  # 生成符合 GitHub 要求的标签
           echo "TAG=$TAG" >> $GITHUB_ENV  # 将 TAG 设置为环境变量
           echo "Generated tag: $TAG"
 
-      # 3. 使用生成的 TAG
+      # 4. 使用生成的 TAG
       - name: Use tag
         run: echo "Tag is ${{ env.TAG }}"  # 访问 TAG 变量
 
-      # 4. 打包代码为 ZIP 文件
+      # 5. 打包代码为 ZIP 文件，文件名与 Release 名称一致
       - name: Create ZIP archive
         run: |
-          zip -r release.zip . -x '.git/*' -x '.github/*'
-          echo "ZIP file created: release.zip"
+          ZIP_NAME="Fate_Farming_CN特化版_${{ env.TAG }}.zip"  # 动态生成 ZIP 文件名
+          zip -r $ZIP_NAME . -x '.git/*' -x '.github/*'
+          echo "ZIP file created: $ZIP_NAME"
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV  # 将 ZIP 文件名设置为环境变量
 
-      # 5. 创建 GitHub Release 并上传 ZIP 文件
+      # 6. 创建 GitHub Release 并上传 ZIP 文件
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v1
         with:
-          files: release.zip  # 上传的 ZIP 文件
+          files: ${{ env.ZIP_NAME }}  # 使用动态生成的 ZIP 文件名
           tag_name: ${{ env.TAG }}  # 使用动态生成的标签
           name: Fate Farming(CN特化版) ${{ env.TAG }}  # Release 名称可以包含自定义文本
           generate_release_notes: true  # 自动生成 Release 说明
