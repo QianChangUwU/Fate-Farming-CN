@@ -80,6 +80,8 @@ This Plugins are Optional and not needed unless you have it enabled in the setti
 ]]
 
 --FATE前设置
+MaxRunTimeInHours                   = 2  -- 设置脚本运行的最大时间为2小时
+ScriptStartTime                     = os.clock()  -- 记录脚本开始运行的时间
 Food = ""                                      --如果不想用任何食物，就将 "" 内留空. 如果想自动使用HQ食物就添加 <hq> 在食物后面，例如 "烧烤暗色茄子 <hq>"
 Potion = ""                                    --如果不想用任何药就将 "" 内留空.
 ShouldSummonChocobo                 = true          --是否召唤陆行鸟？
@@ -88,8 +90,6 @@ ShouldSummonChocobo                 = true          --是否召唤陆行鸟？
     ShouldAutoBuyGysahlGreens       = true          ----如果野菜用完了，自动从利姆萨·罗敏萨的商人处购买99个。
 MountToUse                          = "随机飞行坐骑"       --在FATE之间飞行时使用的坐骑
 FatePriority                        = {"DistanceTeleport", "Progress", "DistanceTeleport", "Bonus", "TimeLeft", "Distance"}
-MaxRunTimeInHours                   = 2  -- 设置脚本运行的最大时间为2小时
-ScriptStartTime                     = os.clock()  -- 记录脚本开始运行的时间
 
 --FATE战斗设置
 CompletionToIgnoreFate              = 80            --设置一个阈值，如果当前地区已完成的fate数量高于这个阈值，则跳过
