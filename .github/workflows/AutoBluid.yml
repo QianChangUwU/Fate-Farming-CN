@@ -16,12 +16,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. 生成唯一标签（TAG 和 Release 名称一致）
+      # 2. 生成唯一标签（符合 GitHub 要求的格式）
       - name: Generate unique tag
         id: generate_tag
         run: |
           CURRENT_DATE=$(date +%Y%m%d)  # 获取当前日期，格式为年月日
-          TAG="Fate Farming(CN特化版)v1.00+$CURRENT_DATE"  # 生成自定义标签
+          TAG="v1.0.0-$CURRENT_DATE"  # 生成符合 GitHub 要求的标签
           echo "TAG=$TAG" >> $GITHUB_ENV  # 将 TAG 设置为环境变量
           echo "Generated tag: $TAG"
 
@@ -41,7 +41,7 @@ jobs:
         with:
           files: release.zip  # 上传的 ZIP 文件
           tag_name: ${{ env.TAG }}  # 使用动态生成的标签
-          name: ${{ env.TAG }}  # Release 名称与 TAG 一致
+          name: Fate Farming(CN特化版) ${{ env.TAG }}  # Release 名称可以包含自定义文本
           generate_release_notes: true  # 自动生成 Release 说明
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
