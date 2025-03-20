@@ -3,9 +3,12 @@ name: AutoBuild
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:  # 忽略 .github/workflows 目录的更改
+      - ".github/workflows/**"
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
+
 
 jobs:
   build:
@@ -16,22 +19,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. 设置时区为 UTC+8 并生成唯一标签（包含日期和时间）
+      # 2. 生成唯一标签（包含日期和时间）
       - name: Generate unique tag
         id: generate_tag
         run: |
           export TZ="Asia/Shanghai"  # 设置时区为 UTC+8（北京时间）
           CURRENT_DATE=$(date +%Y%m%d)  # 获取当前日期，格式为年月日
-          CURRENT_TIME=$(date +%H_%M_%S)  # 获取当前时间，格式为小时分钟秒
+          CURRENT_TIME=$(date +%H%M%S)  # 获取当前时间，格式为小时分钟秒
           TAG="Fate_Farming_CN特化版_1.00_${CURRENT_DATE}_${CURRENT_TIME}"  # 生成自定义标签，包含日期和时间
           echo "TAG=$TAG" >> $GITHUB_ENV  # 将 TAG 设置为环境变量
           echo "Generated tag: $TAG"
 
-      # 3. 使用生成的 TAG
-      - name: Use tag
-        run: echo "Tag is ${{ env.TAG }}"  # 访问 TAG 变量
-
-      # 4. 打包代码为 ZIP 文件
+      # 3. 打包代码为 ZIP 文件
       - name: Create ZIP archive
         run: |
           ZIP_NAME="${{ env.TAG }}.zip"  # 动态生成 ZIP 文件名
@@ -39,8 +38,9 @@ jobs:
           echo "ZIP file created: $ZIP_NAME"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV  # 将 ZIP 文件名设置为环境变量
 
-      # 5. 创建 GitHub Release 并上传 ZIP 文件
+      # 4. 创建 GitHub Release 并上传 ZIP 文件
       - name: Create Release and Upload Asset
+        id: create_release
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ env.ZIP_NAME }}  # 使用动态生成的 ZIP 文件名
@@ -49,3 +49,21 @@ jobs:
           generate_release_notes: true  # 自动生成 Release 说明
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 5. 获取下载次数并更新 Release 描述
+      - name: Update Release Description with Download Count
+        run: |
+          # 获取 Release ID
+          RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.TAG }}" | jq '.id')
+
+          # 获取下载次数
+          DOWNLOAD_COUNT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.TAG }}" | jq '.assets[].download_count')
+
+          # 更新 Release 描述
+          curl -s -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"body": "Download count: '"$DOWNLOAD_COUNT"'\n\n'"$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.TAG }}" | jq -r '.body')"'"}' \
+            "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID"
