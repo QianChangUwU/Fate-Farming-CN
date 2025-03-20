@@ -3,9 +3,13 @@
 # Multi_Zone_Farming_CN
 
 ## 设置
+### Fate_Farming_CN设置
+如果您要使用DLC请在Fate_Farming_CN中将此项改为true
+![Fate_Farming_CN设置](Settings/Fate.png)
+
 ### 脚本设置
 包含较多设置，设置会随着版本更新而更新，所以更新时记得回来看看！
-![SND Basics](Settings/Setting.png)
+![SND插件设置](Settings/Setting.png)
 
 ### SND及脚本内设置
 | | |
