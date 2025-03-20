@@ -80,6 +80,8 @@ This Plugins are Optional and not needed unless you have it enabled in the setti
 ]]
 
 --FATE前设置
+MaxRunTimeInHours                   = 2  -- 设置脚本运行的最大时间为2小时
+ScriptStartTime                     = os.clock()  -- 记录脚本开始运行的时间
 Food = ""                                      --如果不想用任何食物，就将 "" 内留空. 如果想自动使用HQ食物就添加 <hq> 在食物后面，例如 "烧烤暗色茄子 <hq>"
 Potion = ""                                    --如果不想用任何药就将 "" 内留空.
 ShouldSummonChocobo                 = true          --是否召唤陆行鸟？
@@ -2769,7 +2771,18 @@ if ShouldSummonChocobo and GetBuddyTimeRemaining() > 0 then
     yield('/cac "'..ChocoboStance..'"')
 end
 
+-- 在主循环中添加时间检查
 while not StopScript do
+    -- 计算当前运行时间（单位为小时）
+    local currentRunTimeInHours = (os.clock() - ScriptStartTime) / 3600
+
+    -- 如果运行时间超过设定的最大时间，则输出指令并停止脚本
+    if currentRunTimeInHours >= MaxRunTimeInHours then
+        yield("/echo [FATE] 脚本已运行超过 " .. MaxRunTimeInHours .. " 小时，停止脚本。")
+        yield("/snd stop")
+    end
+
+    -- 原有的主循环逻辑
     if NavIsReady() then
         if State ~= CharacterState.dead and GetCharacterCondition(CharacterCondition.dead) then
             State = CharacterState.dead
@@ -2804,6 +2817,8 @@ while not StopScript do
     end
     yield("/wait 0.1")
 end
+
+-- 停止脚本后的清理工作
 yield("/vnav stop")
 
 if GetClassJobId() ~= MainClass.classId then
