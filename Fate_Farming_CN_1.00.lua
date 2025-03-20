@@ -88,6 +88,8 @@ ShouldSummonChocobo                 = true          --是否召唤陆行鸟？
     ShouldAutoBuyGysahlGreens       = true          ----如果野菜用完了，自动从利姆萨·罗敏萨的商人处购买99个。
 MountToUse                          = "随机飞行坐骑"       --在FATE之间飞行时使用的坐骑
 FatePriority                        = {"DistanceTeleport", "Progress", "DistanceTeleport", "Bonus", "TimeLeft", "Distance"}
+MaxRunTimeInHours                   = 2  -- 设置脚本运行的最大时间为2小时
+ScriptStartTime                     = os.clock()  -- 记录脚本开始运行的时间
 
 --FATE战斗设置
 CompletionToIgnoreFate              = 80            --设置一个阈值，如果当前地区已完成的fate数量高于这个阈值，则跳过
@@ -2769,7 +2771,18 @@ if ShouldSummonChocobo and GetBuddyTimeRemaining() > 0 then
     yield('/cac "'..ChocoboStance..'"')
 end
 
+-- 在主循环中添加时间检查
 while not StopScript do
+    -- 计算当前运行时间（单位为小时）
+    local currentRunTimeInHours = (os.clock() - ScriptStartTime) / 3600
+
+    -- 如果运行时间超过设定的最大时间，则输出指令并停止脚本
+    if currentRunTimeInHours >= MaxRunTimeInHours then
+        yield("/echo [FATE] 脚本已运行超过 " .. MaxRunTimeInHours .. " 小时，停止脚本。")
+        yield("/snd stop")
+    end
+
+    -- 原有的主循环逻辑
     if NavIsReady() then
         if State ~= CharacterState.dead and GetCharacterCondition(CharacterCondition.dead) then
             State = CharacterState.dead
@@ -2804,6 +2817,8 @@ while not StopScript do
     end
     yield("/wait 0.1")
 end
+
+-- 停止脚本后的清理工作
 yield("/vnav stop")
 
 if GetClassJobId() ~= MainClass.classId then
