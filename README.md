@@ -2,7 +2,7 @@
 
 # Fate-Farming-CN
 在Fate Farming原本的基础上做了部分调整以适配国服环境
-原作者库：https://github.com/pot0to/pot0to-SND-Scripts
+!原作者库：https://github.com/pot0to/pot0to-SND-Scripts
 
 Fate Farming的部分功能：
 - 双色宝石达到上限时自动购买双色宝石收据（新的旧的都可以）
