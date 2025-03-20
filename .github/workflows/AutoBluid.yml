@@ -21,7 +21,7 @@ jobs:
         id: generate_tag
         run: |
           CURRENT_DATE=$(date +%Y%m%d)  # 获取当前日期，格式为年月日
-          TAG="Fate_Farming_CN_1.00+$CURRENT_DATE"  # 生成自定义标签
+          TAG="Fate_Farming_CN特化版_1.00_$CURRENT_DATE"  # 生成自定义标签
           echo "TAG=$TAG" >> $GITHUB_ENV  # 将 TAG 设置为环境变量
           echo "Generated tag: $TAG"
 
@@ -32,8 +32,10 @@ jobs:
       # 4. 打包代码为 ZIP 文件
       - name: Create ZIP archive
         run: |
-          zip -r release.zip . -x '.git/*' -x '.github/*'
-          echo "ZIP file created: release.zip"
+          ZIP_NAME="Fate_Farming_CN特化版_1.00_${{ env.TAG }}.zip"  # 动态生成 ZIP 文件名
+          zip -r "$ZIP_NAME" . -x '.git/*' -x '.github/*'
+          echo "ZIP file created: $ZIP_NAME"
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV  # 将 ZIP 文件名设置为环境变量
 
       # 5. 创建 GitHub Release 并上传 ZIP 文件
       - name: Create Release and Upload Asset
