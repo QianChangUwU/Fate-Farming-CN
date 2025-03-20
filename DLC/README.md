@@ -8,8 +8,6 @@
 ![SND Basics](Settings/DLC/Setting.png)
 
 ### SND及脚本内设置
-| | |
-|--|--|
-| SND主脚本命名一定要与DLC内设置一致 |
-| ![SND主脚本命名](Settings/DLC/SND.png) |
-| ![DLC内设置](Settings/DLC/LUA.png) |
+SND主脚本命名一定要与DLC内设置一致 
+![SND主脚本命名](Settings/DLC/SND.png) 
+![DLC内设置](Settings/DLC/LUA.png) 
