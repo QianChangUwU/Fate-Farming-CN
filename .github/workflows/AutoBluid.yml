@@ -41,7 +41,7 @@ jobs:
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v1
         with:
-          files: release.zip  # 上传的 ZIP 文件
+          files: ${{ env.ZIP_NAME }}  # 使用动态生成的 ZIP 文件名
           tag_name: ${{ env.TAG }}  # 使用动态生成的标签
           name: ${{ env.TAG }}  # Release 名称与 TAG 一致
           generate_release_notes: true  # 自动生成 Release 说明
