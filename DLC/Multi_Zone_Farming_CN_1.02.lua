@@ -2,17 +2,18 @@
 
 ********************************************************************************
 *                                多区域自动化Fate                              *
-*                                   版本 1.0.1                                 *
+*                                   版本 1.0.2                                 *
 ********************************************************************************
 
-Multi zone 旨在与Fate Farming.lua配合使用。
+多区域自动化Fate旨在与Fate_Farming_CN.lua配合使用。
 该脚本会按照区域列表依次刷Fate，直到当前区域没有符合条件的Fate为止，
 然后传送至下一个区域并重新启动刷Fate脚本。
 
 原作者: pot0to (https://ko-fi.com/pot0to)
 汉化: QianChang 联系方式:2318933089(QQ) 主页(https://github.com/QianChangUwU)
         
-    -> 1.0.1    添加了对死亡和意外战斗的检测
+    -> 1.0.2  添加时间检测
+        添加了对死亡和意外战斗的检测
 
 --#region Settings
 
@@ -23,10 +24,15 @@ Multi zone 旨在与Fate Farming.lua配合使用。
 ]]
 
 FateMacro = "Fate Farming"      -- 你的SND主脚本名称
+AfterScriptStopTP = "部队房屋"  -- 脚本达到设置的时间后回哪儿
+MaxRunTimeInHours = 6           -- 设置脚本运行的最大时间（支持小数，如1.5表示1小时30分钟）
+NotifyBeforeStopMinutes = 5     -- 在停止前多少分钟发出提醒
 
--- 如果你要刷不同版本的地图，直接从下方复制替换即可
-ZonesToFarm =
-{
+ScriptStartTime = os.clock()  -- 记录脚本开始运行的时间（不用动）
+LastNotificationTime = 0      -- 记录上次通知时间
+TimeLimitReached = false      -- 标记是否已达到时间限制
+-- 区域列表
+ZonesToFarm = {
     --7.0地图
     { zoneName = "奥阔帕恰山", zoneId = 1187 },
     { zoneName = "克扎玛乌卡湿地", zoneId = 1188 },
@@ -35,6 +41,7 @@ ZonesToFarm =
     { zoneName = "遗产之地", zoneId = 1191 },
     { zoneName = "活着的记忆", zoneId = 1192 }
 }
+
 
 --      6.0地图
 --    { zoneName = "迷津", zoneId = 956 },
@@ -63,9 +70,12 @@ ZonesToFarm =
 ********************************************************************************
 ]]
 
+
 CharacterCondition = {
     casting=27,
-    betweenAreas=45
+    betweenAreas=45,
+    dead=2,
+    inCombat=26
 }
 
 function TeleportTo(aetheryteName)
@@ -81,21 +91,58 @@ function TeleportTo(aetheryteName)
     yield("/wait 1")
 end
 
+function CheckTimeLimit()
+    local currentRunTimeInHours = (os.clock() - ScriptStartTime) / 3600
+    local remainingMinutes = (MaxRunTimeInHours - currentRunTimeInHours) * 60
+    
+    -- 提前通知
+    if remainingMinutes <= NotifyBeforeStopMinutes and remainingMinutes > 0 and 
+       (os.clock() - LastNotificationTime) > 60 then
+        yield("/echo [提醒] 脚本将在约 "..math.floor(remainingMinutes).." 分钟后停止运行！")
+        LastNotificationTime = os.clock()
+    end
+    
+    -- 达到时间限制
+    if currentRunTimeInHours >= MaxRunTimeInHours and not TimeLimitReached then
+        TimeLimitReached = true
+        yield("/echo [时间到] 脚本已运行 "..MaxRunTimeInHours.." 小时，正在停止...")
+        yield("/snd stop "..FateMacro)
+        yield("/wait 3")
+        TeleportTo(AfterScriptStopTP)
+        yield("/echo [完成] 脚本已安全停止并传送至 "..AfterScriptStopTP)
+        return true
+    end
+    return false
+end
+
 FarmingZoneIndex = 1
 OldBicolorGemCount = GetItemCount(26807)
+
 while true do
+    -- 检查时间限制
+    if CheckTimeLimit() then
+        break  -- 退出主循环
+    end
+    
+    -- 原有逻辑
     if not IsPlayerOccupied() and not IsMacroRunningOrQueued(FateMacro) then
         if GetCharacterCondition(2) or GetCharacterCondition(26) or GetZoneID() == ZonesToFarm[FarmingZoneIndex].zoneId then
             LogInfo("[MultiZone] Starting FateMacro")
             yield("/snd run "..FateMacro)
             repeat
                 yield("/wait 3")
+                if CheckTimeLimit() then
+                    break  -- 如果达到时间限制，提前退出
+                end
             until not IsMacroRunningOrQueued(FateMacro)
+            
+            if TimeLimitReached then break end  -- 如果已超时则完全退出
+            
             LogInfo("[MultiZone] FateMacro has stopped")
             NewBicolorGemCount = GetItemCount(26807)
             if NewBicolorGemCount == OldBicolorGemCount then
                 yield("/echo 当前双色宝石: "..NewBicolorGemCount)
-                FarmingZoneIndex  = (FarmingZoneIndex % #ZonesToFarm) + 1
+                FarmingZoneIndex = (FarmingZoneIndex % #ZonesToFarm) + 1
             else
                 OldBicolorGemCount = NewBicolorGemCount
             end
@@ -106,3 +153,4 @@ while true do
     end
     yield("/wait 1")
 end
+--#endregion
