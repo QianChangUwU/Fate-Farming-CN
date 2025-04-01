@@ -2,7 +2,7 @@
 
 ********************************************************************************
 *                                 Fate农场                                     *
-*                               版本号: 2.21.9                                 *
+*                               版本号: 2.21.9 CN-1.01.02                      *
 ********************************************************************************
 
 作者: pot0to (https://ko-fi.com/pot0to)
@@ -81,7 +81,7 @@ This Plugins are Optional and not needed unless you have it enabled in the setti
 
 --FATE前设置
 AfterScriptStopTP                   = "部队房屋" -- 脚本达到设置的时间后回哪儿，部队房屋/个人房屋/利姆萨·利姆萨/乌尔达哈/格里达尼亚
-MaxRunTimeInHours                   = 2  -- 设置脚本运行的最大时间
+MaxRunTimeInHours                   = 999  -- 设置脚本运行的最大时间(支持小数，如开启DLC模式，该设置废弃)
 ScriptStartTime                     = os.clock()  -- 记录脚本开始运行的时间
 Food = ""                                      --如果不想用任何食物，就将 "" 内留空. 如果想自动使用HQ食物就添加 <hq> 在食物后面，例如 "烧烤暗色茄子 <hq>"
 Potion = ""                                    --如果不想用任何药就将 "" 内留空.
@@ -1843,7 +1843,7 @@ function AutoBuyGysahlGreens()
             TeleportTo("利姆萨·罗敏萨下层甲板")
             return
         else
-            local gysahlGreensVendor = { x=-62.1, y=18.0, z=9.4, npcName="布鲁盖尔商会 班戈·赞戈" }
+            local gysahlGreensVendor = { x=-62.1, y=18.0, z=9.4, npcName="班戈·赞戈" }
             if GetDistanceToPoint(gysahlGreensVendor.x, gysahlGreensVendor.y, gysahlGreensVendor.z) > 5 then
                 if not (PathIsRunning() or PathfindInProgress()) then
                     PathfindAndMoveTo(gysahlGreensVendor.x, gysahlGreensVendor.y, gysahlGreensVendor.z)
