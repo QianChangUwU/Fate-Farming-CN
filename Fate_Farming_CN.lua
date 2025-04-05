@@ -2,13 +2,21 @@
 
 ********************************************************************************
 *                                 Fate农场                                     *
-*                               版本号: 2.21.9 CN-1.01.02                      *
+*                               版本号: 2.21.11 CN-1.02                        *
 ********************************************************************************
 
 作者: pot0to (https://ko-fi.com/pot0to)
 原github库: https://github.com/pot0to/pot0to-SND-Scripts/blob/main/Fate%20Farming/Fate%20Farming.lua
 汉化: QianChang 联系方式:2318933089(QQ) 主页(https://github.com/QianChangUwU)
 
+    -> 2.21.11  在上坐骑后添加1秒等待，这样你就可以牢牢地固定在坐骑上。似乎是
+                    像中文这样的语言执行log和echo
+                    消息速度比英语快，导致下一个Pathfind步骤
+                    在正确安装之前，发生得太快，而
+                    你正处在跳跃的中间。这迫使vnav给予
+                    你是一条步行道，而不是一条飞行道，所以你
+                    有时会卡住。
+    -> 2.21.10  修复对vbmai预设的调用              
     -> 2.21.9   By Allison
             增加了检查到FATE距离的优先级，考虑到传送后可能的更短距离。
             增加了FatePriority设置。默认设置与之前相同，但增加了上述的新检查。
@@ -22,22 +30,6 @@
             可能在从FATE中被推出时搞砸了一些东西。
             修复了“should it to Turn” -> “should it do Turn”的拼写错误。
         
-    -> 2.21.8 增加了在脚本自然结束时切换回原始职业的逻辑，适用于同伴模式。
-            修复了“PorcentageToHoldBuff”的拼写错误。
-            修复了FATE完成后走回中心的部分。
-            移除了跳跃。
-            修复了更改实例的同伴脚本。
-            调整了着陆逻辑，希望它不会再卡在太高的地方。
-            增加了仅完成奖励FATE的功能。
-            调整了旧萨雷安双色宝石商人的坐标。
-            支持多区域farming。
-            增加了一些萨纳兰的Fate NPC。
-            清理了亚克特尔树海飞回以太之光时的着陆条件。
-            增加了飞回以太之光时的高度限制检查。
-            重新设计了双色宝石交换。
-            增加了对双色宝石商人的检查和调试。
-            修复了拉诺西亚外地和南萨纳兰的飞行禁令。
-            增加了如果你离FATE中心太远无法瞄准收集FATE NPC时向中心走的功能。
 
 ********************************************************************************
 *                                    必要插件                                   *
@@ -1346,6 +1338,7 @@ function ChangeInstance()
     end
 
     if GetCharacterCondition(CharacterCondition.mounted) then
+        yield("/wait 1") -- wait a second to make sure you're firmly on the mount
         State = CharacterState.changeInstanceDismount
         LogInfo("[FATE] State Change: ChangeInstanceDismount")
         return
@@ -1901,7 +1894,7 @@ function TurnOnAoes()
         elseif RotationPlugin == "BMR" then
             yield("/bmrai setpresetname "..RotationAoePreset)
         elseif RotationPlugin == "VBM" then
-            yield("/vbmai setpresetname "..RotationAoePreset)
+            yield("/vbm ar toggle "..RotationAoePreset)
         end
         AoesOn = true
     end
@@ -1916,7 +1909,7 @@ function TurnOffAoes()
         elseif RotationPlugin == "BMR" then
             yield("/bmrai setpresetname "..RotationSingleTargetPreset)
         elseif RotationPlugin == "VBM" then
-            yield("/vbmai setpresetname "..RotationSingleTargetPreset)
+            yield("/vbm ar toggle "..RotationSingleTargetPreset)
         end
         AoesOn = false
     end
@@ -1927,7 +1920,7 @@ function TurnOffRaidBuffs()
         if RotationPlugin == "BMR" then
             yield("/bmrai setpresetname "..RotationHoldBuffPreset)
         elseif RotationPlugin == "VBM" then
-            yield("/vbmai setpresetname "..RotationHoldBuffPreset)
+            yield("/vbm ar toggle "..RotationHoldBuffPreset)
         end
     end
 end
@@ -1954,8 +1947,10 @@ function TurnOnCombatMods(rotationMode)
                 yield("/rotation auto on")
                 LogInfo("[FATE] TurnOnCombatMods /rotation auto on")
             end
-        elseif RotationPlugin == "BMR" or RotationPlugin == "VBM" then
+        elseif RotationPlugin == "BMR" then
             yield("/bmrai setpresetname "..RotationAoePreset)
+        elseif RotationPlugin == "VBM" then
+            yield("/vbm ar toggle "..RotationAoePreset)
         elseif RotationPlugin == "Wrath" then
             yield("/wrath auto on")
         end
@@ -2009,6 +2004,7 @@ function TurnOffCombatMods()
                 yield("/bmrai followoutofcombat off")
             elseif DodgingPlugin == "VBM" then
                 yield("/vbmai off")
+                yield("/vbm ar disable")
                 yield("/vbmai followtarget off")
                 yield("/vbmai followcombat off")
                 yield("/vbmai followoutofcombat off")
