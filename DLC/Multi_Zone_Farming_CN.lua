@@ -57,7 +57,7 @@ ZonesToFarm = {
 --    { zoneName = "安穆·艾兰", zoneId = 815 },
 --    { zoneName = "伊尔美格", zoneId = 816 },
 --    { zoneName = "拉凯提卡大森林", zoneId = 817 },
---    { zoneName = "黑风海", zoneId = 813 },
+--    { zoneName = "黑风海", zoneId = 818 },
 
 
 --#endregion Settings
