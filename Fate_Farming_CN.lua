@@ -1424,7 +1424,7 @@ function FlyBackToAetheryte()
             if MountToUse == "随机飞行坐骑" then
                 yield('/gaction "随机飞行坐骑"')
             else
-                yield('/mount "' .. MountToUse)
+                yield('/mount ' .. MountToUse)
             end
         end
         return
@@ -1453,7 +1453,7 @@ function Mount()
         if MountToUse == "随机飞行坐骑" then
             yield('/gaction "随机飞行坐骑"')
         else
-            yield('/mount "' .. MountToUse)
+            yield('/mount ' .. MountToUse)
         end
     end
     yield("/wait 1")
