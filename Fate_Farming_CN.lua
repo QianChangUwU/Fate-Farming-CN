@@ -1,3 +1,18 @@
+--[=====[
+[[SND Metadata]]
+author: 原作者：pot0to/汉化：QianChang
+version: 3.0.1 CN-1.10
+plugin_dependencies:
+- YesAlready
+- vnavmesh
+- RotationSolver
+- BossMod
+- TextAdvance
+- TeleporterPlugin
+- Lifestream
+
+[[End Metadata]]
+--]=====]
 --[[
 
 ********************************************************************************
