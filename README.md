@@ -28,9 +28,13 @@ Fate Farming的部分功能：
 
 ## **※推荐使用VBM+RSR+DR自动开启危命任务模块※**
 
-## 设置
+# 设置
 ## 新建脚本 (SND2)
 ![SND Basics](Settings/SND.png)
+
+### 脚本设置
+## **※一定要看※**
+![SND Basics](Settings/Setting.png)
 
 ## 注意，一定要将飞行操作类型改成以下类型
 ![Fly](Settings/Fly.png)
@@ -38,9 +42,6 @@ Fate Farming的部分功能：
 ## 建议开启DR此模块，不用再对话NPC即可开启Fate
 ![DR](Settings/DR.png)
 
-### 脚本设置
-包含较多设置，设置会随着版本更新而更新
-![SND Basics](Settings/Setting.png)
 
 ## 相关依赖插件安装
 ### 必要插件
