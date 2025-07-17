@@ -1,27 +1,27 @@
 --[=====[
 [[SND Metadata]]
-author: 原作者：pot0to/汉化：QianChang
+author: "原作者:pot0to/汉化:QianChang"
 version: 3.0.9 CN-1.11
 description: >-
-  Fate farming 脚本具有以下特点：
+  Fate farming 脚本具有以下特点:
 
-  - 当您的宝石快满时，可以自动购买 双色宝石收据（7.0和6.0的）
+  - "当您的宝石快满时,可以自动购买 双色宝石收据（7.0和6.0的）"
 
-  - Fate选择的优先级系统：距离/是否可以传送>进度>剩余时间>是否有加成
+  - "Fate选择的优先级系统:距离/是否可以传送>进度>剩余时间>是否有加成"
 
-  - 当 迷失者/迷失少女 在 Fate 期间出现时，会优先考虑它们
+  - "当 迷失者/迷失少女 在 Fate 期间出现时,会优先考虑它们"
 
-  - 可以完成所有 Fate，包括收集 Fate
+  - "可以完成所有 Fate,包括收集 Fate"
 
-  - 死亡时复活并重新开始 Fate Farming
+  - "死亡时复活并重新开始 Fate Farming"
 
-  - 当区域中没有剩余的 Fate 时尝试更改副本区
+  - "当区域中没有剩余的 Fate 时尝试更改副本区"
 
-  - 可以处理你的 雇员 和 军票上交，然后回到 Fate 区域继续 Fate
+  - "可以处理你的 雇员 和 军票上交,然后回到 Fate 区域继续 Fate"
 
-  - 用完时自动购买 萨基尔野菜 和 8 级暗物质
+  - "用完时自动购买 萨基尔野菜 和 8 级暗物质"
 
-  - 具有专门用于 古武魂武 的配套脚本，或者您可以编写自己的脚本！（请参阅配套脚本部分）
+  - "具有专门用于 古武魂武 的配套脚本,或者您可以编写自己的脚本!（请参阅配套脚本部分）"
 plugin_dependencies:
 - Lifestream
 - vnavmesh
@@ -29,19 +29,19 @@ plugin_dependencies:
 configs:
   Food:
     default: ""
-    description: 如果不想用任何食物，就将 "" 内留空. 如果想自动使用HQ食物就添加 <hq> 在食物后面，例如 "烧烤暗色茄子 <hq>"
+    description: 
     type: string
   Potion:
     default: ""
-    description: 如果不想用任何药就将 "" 内留空. 如果想自动使用HQ药品就添加 <hq> 在药品后面，例如 "xxx <hq>"
+    description: "如果不想用任何药就留空. 如果想自动使用HQ药品就添加 <hq> 在药品后面,例如 xxx <hq>"
     type: string
   Chocobo Companion Stance:
-    default: "Healer"
-    description: 陆行鸟选项: 跟随/自由战术/防护战术/治疗战术/进攻战术，如果不使用陆行鸟则设为 "None"
+    default: "治疗战术"
+    description: "陆行鸟选项: 跟随/自由战术/防护战术/治疗战术/进攻战术,如果不使用陆行鸟则设为None"
     type: string
   Buy Gysahl Greens?:
     default: true
-    description: 如果库存中没有，则自动从商人处购买 99 个 萨基尔野菜
+    description: "如果库存中没有,则自动从商人处购买 99 个 萨基尔野菜"
     type: boolean
   Ignore FATE if progress is over (%):
     default: 80
@@ -49,91 +49,91 @@ configs:
     min: 0
     max: 100
     required: true
-    description: Fate完成度高于该数值，则无视该Fate
+    description: "Fate完成度高于该数值,则无视该Fate"
   Ignore FATE if duration is less than (mins):
     default: 3
     type: int
     min: 0
     max: 100
     required: true
-    description: Fate剩余时间低于该数值，则无视该Fate
+    description: "Fate剩余时间低于该数值,则无视该Fate"
   Ignore boss FATEs until progress is at least (%):
     default: 0
     type: int
     min: 0
     max: 100
     required: true
-    description: 当Boss Fate完成度达到该数值时，再去该Boss Fate
+    description: "当Boss Fate完成度达到该数值时,再去该Boss Fate"
   Ignore Special FATEs until progress is at least (%):
     default: 20
     type: int
     min: 0
     max: 100
     required: true
-    description: 当特殊Fate（单人无法完成）完成度达到该数值，再去该Fate
+    description: "当特殊Fate（单人无法完成）完成度达到该数值,再去该Fate"
   Do collection FATEs?:
     default: true
     type: boolean
-    description: 是否做收集Fate
+    description: "是否做收集Fate"
   Do only bonus FATEs?:
     default: false
     type: boolean
-    description: 如果为true，则只做奖励提升FATE，忽略其他所有FATE
+    description: "如果为true,则只做奖励提升FATE,忽略其他所有FATE"
   Max melee distance:
     default: 2.5
     type: float
     min: 0
     max: 30
     required: true
-    description: 最大近战距离
+    description: "最大近战距离"
   Max ranged distance:
     default: 20
     type: float
     min: 0
     max: 30
     required: true
-    description: 最大远程距离
+    description: "最大远程距离"
   Forlorns:
     default: All
     type: string
     required: true
-    description: 是否攻击迷失者和迷失少女（不建议修改）
+    description: "是否攻击迷失者和迷失少女（不建议修改）"
   Change instances if no FATEs?:
     default: true
     type: boolean
-    description: 当前副本区没有合适的Fate时，是否更换副本区
+    description: "当前副本区没有合适的Fate时,是否更换副本区"
   Exchange bicolor gemstones for:
     default: 图拉尔双色宝石的收据
     type: string
-    description: 如果您不想换双色物品，请留空。双色票据：旧萨雷安填写 "双色宝石的收据" 九号解决方案则填写 "图拉尔双色宝石的收据" 
+    description: "如果您不想换双色物品,请留空. 双色票据:旧萨雷安填 双色宝石的收据 九号解决方案则填 图拉尔双色宝石的收据"
   Self repair?:
     default: true
-    description: 是否自行修理，关闭后会去海都找修理工
+    description: "是否自行修理,关闭后会去海都找修理工"
     type: boolean
   Pause for retainers?:
     default: true
     type: boolean
-    description: 是否自动收雇员，需安装AutoRetainers插件
+    description: "是否自动收雇员,需安装AutoRetainers插件"
   Dump extra gear at GC?:
     default: true
     type: boolean
-    description: 自动上交军票，与自动收雇员一起使用，以防它们带回太多东西并堵塞您的背包。
+    description: "自动上交军票,与自动收雇员一起使用,以防它们带回太多东西并堵塞您的背包. "
   Return on death?:
     default: true
     type: boolean
-    description: 自动接受死亡通知，在死后回到你选择的水晶
+    description: "自动接受死亡通知,在死后回到你选择的水晶"
   Echo logs:
     default: All
     type: string
-    description: 修改这个值来控制你在聊天中希望显示多少echo消息/ None 不需要任何消息 /Gems 每个FATE结束后会显示当前双色宝石数量/ All 显示双色宝石数量，并提示下一个要前往的FATE名称
+    description: "修改这个值来控制你在聊天中希望显示多少echo消息/ None 不需要任何消息 /Gems 每个FATE结束后会显示当前双色宝石数量/ All 显示双色宝石数量,并提示下一个要前往的FATE名称"
   Rotation Plugin:
     default: "Any"
     type: string
-    description: 选项 - Any/Wrath/RotationSolver/BossMod/BossModReborn. 自动输出插件
+    description: "选项 - Any/Wrath/RotationSolver/BossMod/BossModReborn. 自动输出插件"
   Dodging Plugin:
     default: "Any"
     type: string
-    description: 选项 - Any/BossMod/BossModReborn/None. 自动Ai躲避怪物技能
+    description: "选项 - Any/BossMod/BossModReborn/None. 自动Ai躲避怪物技能"
 [[End Metadata]]
 --]=====]
 --[[
@@ -143,12 +143,12 @@ configs:
 ********************************************************************************
 
     -> 3.0.9    By Allison.
-                修复Fate完成后角色站立不动的bug。
+                修复Fate完成后角色站立不动的bug. 
                 新增自动循环插件和Ai躲避插件的配置选项（修复了多个求解器同时存在时的bug）
-                更新脚本描述以更准确反映功能。
-                清理元数据并调整描述，使其更贴合脚本实际内容。
-                小幅调整战斗相关距离判定逻辑，使其更符合FFXIV对技能可用范围的判定机制（忽略高度差）。有望修复战斗中部分最大距离判定的问题。
-                其他小型错误修复。
+                更新脚本描述以更准确反映功能. 
+                清理元数据并调整描述,使其更贴合脚本实际内容. 
+                小幅调整战斗相关距离判定逻辑,使其更符合FFXIV对技能可用范围的判定机制（忽略高度差）. 有望修复战斗中部分最大距离判定的问题. 
+                其他小型错误修复. 
     -> 3.0.6    新增元数据支持
     -> 3.0.5    修复自动修理功能
     -> 3.0.4    移除冗余日志输出
@@ -160,12 +160,12 @@ configs:
 *                                    必要插件                                   *
 ********************************************************************************
 
-需要以下插件才能正常工作：
+需要以下插件才能正常工作:
 
     -> Something Need Doing [Expanded Edition] : (核心插件)   https://puni.sh/api/repository/croizat   
     -> VNavmesh :   (用于规划路线和移动)    https://puni.sh/api/repository/veyn       
     -> RotationSolver Reborn :  (用于打自动循环)  https://raw.githubusercontent.com/FFXIV-CombatReborn/CombatRebornRepo/main/pluginmaster.json       
-    -> RotationSolver Reborn配置：
+    -> RotationSolver Reborn配置:
         -> 在Target选项卡 -> 勾选 "Select only Fate targets in Fate" and DESELECT "Target Fate priority" (不然会攻击fate外的敌人)
         -> 在Target选项卡 -> 将"Engage settings" 设置为 "All targets that are in range for any abilities (Tanks/Autoduty)" 不管你用什么职业
         -> 在List选项卡 -> Map Specific Settings内 -> 添加 "Forlorn Maiden" 和 "The Forlorn" 为优先目标
@@ -181,7 +181,7 @@ This Plugins are Optional and not needed unless you have it enabled in the setti
 
     -> AutoRetainer : (for Retainers [Retainers])   https://love.puni.sh/ment.json
     -> Deliveroo : (对于gc turn in [TurnIn])   https://plugins.carvel.li/
-    -> Bossmod/BossModReborn: (用于AI躲避，如果是红职可能不开这个可能会死)  https://puni.sh/api/repository/veyn
+    -> Bossmod/BossModReborn: (用于AI躲避,如果是红职可能不开这个可能会死)  https://puni.sh/api/repository/veyn
                                                 https://raw.githubusercontent.com/FFXIV-CombatReborn/CombatRebornRepo/main/pluginmaster.json
     -> ChatCoordinates : (用来在小地图标记下一个fate) available via base /xlplugins
 
@@ -754,7 +754,7 @@ FatesData = {
             },
             fatesWithContinuations = {},
             blacklistedFates= {
-                "跨海而来的老饕", --由于斜坡上视野不佳，可能什么都做不了就呆站着
+                "跨海而来的老饕", --由于斜坡上视野不佳,可能什么都做不了就呆站着
             }
         }
     },
@@ -2088,7 +2088,7 @@ function SummonChocobo()
         if Inventory.GetItemCount(4868) > 0 then
             yield("/item 基萨尔野菜")
             yield("/wait 3")
-            yield('/cac "'..ChocoboStance..' stance"')
+            yield("/cac "..ChocoboStance.."")
         elseif ShouldAutoBuyGysahlGreens then
             State = CharacterState.autoBuyGysahlGreens
             Dalamud.Log("[FATE] State Change: AutoBuyGysahlGreens")
@@ -2452,7 +2452,7 @@ function DoFate()
             if not ForlornMarked then
                 yield("/enemysign attack1")
                 if Echo == "All" then
-                    yield("/echo 发现迷失者！")
+                    yield("/echo 发现迷失者!")
                 end
                 TurnOffAoes()
                 ForlornMarked = true
@@ -2669,7 +2669,7 @@ function HandleDeath()
             if Echo and not DeathAnnouncementLock then
                 DeathAnnouncementLock = true
                 if Echo == "All" then
-                    yield("/echo [FATE] 你死了，回家吧孩子.")
+                    yield("/echo [FATE] 你死了,回家吧孩子.")
                 end
             end
 
@@ -2681,7 +2681,7 @@ function HandleDeath()
             if Echo and not DeathAnnouncementLock then
                 DeathAnnouncementLock = true
                 if Echo == "All" then
-                    yield("/echo [FATE] 你已经死了。等待脚本检测到您复活...")
+                    yield("/echo [FATE] 你已经死了. 等待脚本检测到您复活...")
                 end
             end
             yield("/wait 1")
@@ -2881,7 +2881,7 @@ function Repair()
         elseif ShouldAutoBuyDarkMatter then
             if Svc.ClientState.TerritoryType ~=  129 then
                 if Echo == "All" then
-                    yield("/echo 没有暗物质了！去海都买点吧.")
+                    yield("/echo 没有暗物质了!去海都买点吧.")
                 end
                 TeleportTo("利姆萨·罗敏萨下层甲板")
                 return
@@ -3074,12 +3074,12 @@ ShouldSummonChocobo = ChocoboStance == "跟随"
     or ChocoboStance == "进攻战术"
 
 ShouldAutoBuyGysahlGreens = Config.Get("Buy Gysahl Greens?")    --
-MountToUse                          = "mount roulette"       --The mount you'd like to use when flying between fates
+MountToUse                          = "随机飞行坐骑"       --The mount you'd like to use when flying between fates
 FatePriority                        = {"DistanceTeleport", "Progress", "Bonus", "TimeLeft", "Distance"}
 
 --Fate Combat Settings
 CompletionToIgnoreFate = Config.Get("Ignore FATE if progress is over (%)")
-MinTimeLeftToIgnoreFate = Config.Get("Ignore FATE if duration is less than (mins)")*60
+MinTimeLeftToIgnoreFate = (Config.Get("Ignore FATE if duration is less than (mins)") or 5) * 60
 CompletionToJoinBossFate = Config.Get("Ignore boss FATEs until progress is at least (%)")
 CompletionToJoinSpecialBossFates = Config.Get("Ignore Special FATEs until progress is at least (%)")
 ClassForBossFates = ""            --If you want to use a different class for boss fates, set this to the 3 letter abbreviation
@@ -3185,17 +3185,17 @@ end
 
 -- Final warning if no dodging plugin is active
 if DodgingPlugin == "None" then
-    yield("/echo [FATE] Warning: 您没有配置 AI 躲避插件，因此您的角色将站在怪物攻击中。请安装 BossMod 或 BossMod Reborn")
+    yield("/echo [FATE] Warning: 您没有配置 AI 躲避插件,因此您的角色将站在怪物攻击中. 请安装 BossMod 或 BossMod Reborn")
 end
 
 if Retainers and not HasPlugin("AutoRetainer") then
     Retainers = false
-    yield("/echo [FATE] Warning: 您已启用处理雇员的功能，但未安装 AutoRetainer。")
+    yield("/echo [FATE] Warning: 您已启用处理雇员的功能,但未安装 AutoRetainer. ")
 end
 
 if ShouldGrandCompanyTurnIn and not HasPlugin("Deliveroo") then
     ShouldGrandCompanyTurnIn = false
-    yield("/echo [FATE] Warning: 您已启用自动上交军票的功能，但尚未安装 Deliveroo")
+    yield("/echo [FATE] Warning: 您已启用自动上交军票的功能,但尚未安装 Deliveroo")
 end
 
 if not CompanionScriptMode then
@@ -3247,7 +3247,7 @@ if ShouldExchangeBicolorGemstones ~= false then
         end
     end
     if SelectedBicolorExchangeData == nil then
-        yield("/echo [FATE] 无法识别： "..ItemToPurchase.."， 请确保它在兑换表中！")
+        yield("/echo [FATE] 无法识别： "..ItemToPurchase..", 请确保它在兑换表中!")
         StopScript = true
     end
 end
@@ -3259,7 +3259,7 @@ if InActiveFate() then
 end
 
 if ShouldSummonChocobo and GetBuddyTimeRemaining() > 0 then
-    yield('/cac "'..ChocoboStance..' stance"')
+    yield("/cac "..ChocoboStance.."")
 end
 
 while not StopScript do
