@@ -330,9 +330,6 @@ FatesData = {
     {
         zoneName = "库尔札斯中央高地",
         zoneId = 155,
-        aetheryteList = {
-            { aetheryteName="巨龙首营地", x=223.98718, y=315.7854, z=-234.85168 }
-        },
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
@@ -343,9 +340,6 @@ FatesData = {
     {
         zoneName = "库尔札斯西部高地",
         zoneId = 397,
-        aetheryteList = {
-            { aetheryteName="隼巢", x=474.87585, y=217.94458, z=708.5221 }
-        },
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
@@ -356,9 +350,6 @@ FatesData = {
     {
         zoneName = "摩杜纳",
         zoneId = 156,
-        aetheryteList = {
-            { aetheryteName="丧灵钟", x=40.024292, y=24.002441, z=-668.0247 }
-        },
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
@@ -369,10 +360,6 @@ FatesData = {
     {
         zoneName = "阿巴拉提亚云海",
         zoneId = 401,
-        aetheryteList = {
-            { aetheryteName="云顶营地", x=-615.7473, y=-118.36426, z=546.5934 },
-            { aetheryteName="尊杜集落", x=-613.1533, y=-49.485046, z=-415.03015 }
-        },
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
@@ -383,9 +370,6 @@ FatesData = {
     {
         zoneName = "魔大陆阿济兹拉",
         zoneId = 402,
-        aetheryteList = {
-            { aetheryteName="螺旋港", x=-722.8046, y=-182.29956, z=-593.40814 }
-        },
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
@@ -396,10 +380,6 @@ FatesData = {
     {
         zoneName = "龙堡参天高地",
         zoneId = 398,
-        aetheryteList = {
-            { aetheryteName="尾羽集落", x=532.6771, y=-48.722107, z=30.166992 },
-            { aetheryteName="不洁三塔", x=-304.12756, y=-16.70868, z=32.059082 }
-        },
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
@@ -411,9 +391,6 @@ FatesData = {
         zoneName = "龙堡内陆低地",
         zoneId=399,
         tpZoneId = 478,
-        aetheryteList = {
-            { aetheryteName="田园郡", x=71.94617, y=211.26111, z=-18.905945 }
-        },
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
@@ -424,10 +401,6 @@ FatesData = {
     {
         zoneName = "翻云雾海",
         zoneId=400,
-        aetheryteList = {
-            { aetheryteName="莫古力之家", x=259.20496, y=-37.70508, z=596.85657 },
-            { aetheryteName="天极白垩宫", x=-584.9546, y=52.84192, z=313.43542 },
-        },
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
@@ -438,10 +411,6 @@ FatesData = {
     {
         zoneName = "雷克兰德",
         zoneId = 813,
-        aetheryteList = {
-            { aetheryteName="奥斯塔尔严命城", x=-735, y=53, z=-230 },
-            { aetheryteName="乔布要塞", x=753, y=24, z=-28 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="樵夫之歌", npcName="雷克兰德的樵夫" }
@@ -459,11 +428,6 @@ FatesData = {
     {
         zoneName = "珂露西亚岛",
         zoneId = 814,
-        aetheryteList = {
-            { aetheryteName="滞潮村", x=668, y=29, z=289 },
-            { aetheryteName="工匠村", x=-244, y=20, z=385 },
-            { aetheryteName="图姆拉村", x=-426, y=419, z=-623 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="制作战士之自走人偶", npcName="图尔家族的技师" }
@@ -479,11 +443,6 @@ FatesData = {
     {
         zoneName = "安穆·艾兰",
         zoneId = 815,
-        aetheryteList = {
-            { aetheryteName="鼹灵集市", x=246, y=12, z=-220 },
-            { aetheryteName="络尾聚落", x=-511, y=47, z=-212 },
-            { aetheryteName="上路客店", x=399, y=-24, z=307 },
-        },
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
@@ -496,11 +455,6 @@ FatesData = {
     {
         zoneName = "伊尔美格",
         zoneId = 816,
-        aetheryteList = {
-            { aetheryteName="群花馆", x=-344, y=48, z=512 },
-            { aetheryteName="云村", x=380, y=87, z=-687 },
-            { aetheryteName="普拉恩尼茸洞", x=-72, y=103, z=-857 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="仙子尾巴之金黄花蜜", npcName="寻找花蜜的仙子" }
@@ -515,10 +469,6 @@ FatesData = {
     {
         zoneName = "拉凯提卡大森林",
         zoneId = 817,
-        aetheryteList = {
-            { aetheryteName="蛇行枝", x=-103, y=-19, z=297 },
-            { aetheryteName="法诺村", x=382, y=21, z=-194 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="粉红鹳", npcName="夜之民导师" },
@@ -536,10 +486,6 @@ FatesData = {
     {
         zoneName = "黑风海",
         zoneId = 818,
-        aetheryteList = {
-            { aetheryteName="鳍人潮池", x=561, y=352, z=-199 },
-            { aetheryteName="马克连萨斯广场", x=-141, y=-280, z=218 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="灾厄的古塔尼亚之收集红血珊瑚", npcName="提乌嘶·澳恩" },
@@ -565,11 +511,6 @@ FatesData = {
     {
         zoneName = "迷津",
         zoneId = 956,
-        aetheryteList = {
-            { aetheryteName="公堂保管院", x=443, y=170, z=-476 },
-            { aetheryteName="小萨雷安", x=8, y=-27, z=-46 },
-            { aetheryteName="无路总部", x=-729, y=-27, z=302 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="迷津风玫瑰", npcName="束手无策的研究员" },
@@ -585,11 +526,6 @@ FatesData = {
     {
         zoneName = "萨维奈岛",
         zoneId = 957,
-        aetheryteList = {
-            { aetheryteName="新港", x=193, y=6, z=629 },
-            { aetheryteName="代米尔遗烈乡", x=-527, y=4, z=36 },
-            { aetheryteName="波洛伽护法村", x=405, y=5, z=-244 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="芳香的炼金术士：危险的芬芳", npcName="调香师 萨加巴缇" }
@@ -607,10 +543,6 @@ FatesData = {
     {
         zoneName = "加雷马",
         zoneId = 958,
-        aetheryteList = {
-            { aetheryteName="碎璃营地", x=-408, y=24, z=479 },
-            { aetheryteName="第三站", x=518, y=-35, z=-178 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="资源回收分秒必争", npcName="沦为难民的魔导技师" }
@@ -630,10 +562,6 @@ FatesData = {
     {
         zoneName = "叹息海",
         zoneId = 959,
-        aetheryteList = {
-            { aetheryteName="泪湾", x=-566, y=134, z=650 },
-            { aetheryteName="最佳威兔洞", x=0, y=-128, z=-512 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="如何追求兔生刺激", npcName="担惊威" }
@@ -652,11 +580,6 @@ FatesData = {
     {
         zoneName = "天外天垓",
         zoneId = 960,
-        aetheryteList = {
-            { aetheryteName="半途终旅", x=-544, y=74, z=269 },
-            { aetheryteName="异亚村落", x=64, y=272, z=-657 },
-            { aetheryteName="奥密克戎基地", x=-489, y=437, z=333 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="侵略兵器召回指令：扩建通信设备", npcName="N-6205" }
@@ -676,11 +599,6 @@ FatesData = {
     {
         zoneName = "厄尔庇斯",
         zoneId = 961,
-        aetheryteList = {
-            { aetheryteName="醒悟天测园", x=159, y=11, z=126 },
-            { aetheryteName="十二奇园", x=-633, y=-19, z=542 },
-            { aetheryteName="创作者之家", x=-529, y=161, z=-222 },
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="望请索克勒斯先生谅解", npcName="负责植物的观察者" }
@@ -700,10 +618,6 @@ FatesData = {
     {
         zoneName = "奥阔帕恰山",
         zoneId = 1187,
-        aetheryteList = {
-            { aetheryteName="瓦丘恩佩洛", x=335, y=-160, z=-415 },
-            { aetheryteName="沃拉的回响", x=465, y=115, z=635 },
-        },
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {
@@ -730,11 +644,6 @@ FatesData = {
     {
         zoneName="克扎玛乌卡湿地",
         zoneId=1188,
-        aetheryteList={
-            { aetheryteName="哈努聚落", x=-170, y=6, z=-470 },
-            { aetheryteName="朋友的灯火", x=541, y=117, z=203 },
-            { aetheryteName="土陶郡", x=-477, y=124, z=311 }
-        },
         fatesList={
             collectionsFates={
                 { fateName="密林淘金", npcName="莫布林族采集者" },
@@ -759,10 +668,6 @@ FatesData = {
     {
         zoneName="亚克特尔树海",
         zoneId=1189,
-        aetheryteList={
-            { aetheryteName="红豹村", x=-400, y=24, z=-431 },
-            { aetheryteName="玛穆克", x=720, y=-132, z=527 }
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="逃离恐怖菇", npcName="霍比格族采集者" }
@@ -788,11 +693,6 @@ FatesData = {
     {
         zoneName="夏劳尼荒野",
         zoneId=1190,
-        aetheryteList= {
-            { aetheryteName="胡萨塔伊驿镇", x=390, y=0, z=465 },
-            { aetheryteName="谢申内青磷泉", x=-295, y=19, z=-115 },
-            { aetheryteName="美花黑泽恩", x=310, y=-15, z=-567 }
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="剃毛时间", npcName="迎曦之民采集者" },
@@ -817,11 +717,6 @@ FatesData = {
     {
         zoneName="遗产之地",
         zoneId=1191,
-        aetheryteList= {
-            { aetheryteName="亚斯拉尼站", x=515, y=145, z=210 },
-            { aetheryteName="边郊镇", x=-221, y=32, z=-583 },
-            { aetheryteName="雷转质矿场", x=-222, y=31,  z=123 }
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="药师的工作", npcName="迎曦之民栽培者" },
@@ -844,11 +739,6 @@ FatesData = {
     {
         zoneName="活着的记忆",
         zoneId=1192,
-        aetheryteList= {
-            { aetheryteName="地场节点·忆", x=0, y=56, z=796 },
-            { aetheryteName="地场节点·火", x=659, y=27, z=-285 },
-            { aetheryteName="地场节点·风", x=-253, y=56, z=-400 }
-        },
         fatesList= {
             collectionsFates= {
                 { fateName="良种难求", npcName="无失哨兵GX" },
