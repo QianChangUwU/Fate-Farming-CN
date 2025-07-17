@@ -1,54 +1,160 @@
 --[=====[
 [[SND Metadata]]
 author: 原作者：pot0to/汉化：QianChang
-version: 3.0.1 CN-1.10
-plugin_dependencies:
-- YesAlready
-- vnavmesh
-- RotationSolver
-- BossMod
-- TextAdvance
-- TeleporterPlugin
-- Lifestream
+version: 3.0.9 CN-1.11
+description: >-
+  Fate farming 脚本具有以下特点：
 
+  - 当您的宝石快满时，可以自动购买 双色宝石收据（7.0和6.0的）
+
+  - Fate选择的优先级系统：距离/是否可以传送>进度>剩余时间>是否有加成
+
+  - 当 迷失者/迷失少女 在 Fate 期间出现时，会优先考虑它们
+
+  - 可以完成所有 Fate，包括收集 Fate
+
+  - 死亡时复活并重新开始 Fate Farming
+
+  - 当区域中没有剩余的 Fate 时尝试更改副本区
+
+  - 可以处理你的 雇员 和 军票上交，然后回到 Fate 区域继续 Fate
+
+  - 用完时自动购买 萨基尔野菜 和 8 级暗物质
+
+  - 具有专门用于 古武魂武 的配套脚本，或者您可以编写自己的脚本！（请参阅配套脚本部分）
+plugin_dependencies:
+- Lifestream
+- vnavmesh
+- TextAdvance
+configs:
+  Food:
+    default: ""
+    description: 如果不想用任何食物，就将 "" 内留空. 如果想自动使用HQ食物就添加 <hq> 在食物后面，例如 "烧烤暗色茄子 <hq>"
+    type: string
+  Potion:
+    default: ""
+    description: 如果不想用任何药就将 "" 内留空. 如果想自动使用HQ药品就添加 <hq> 在药品后面，例如 "xxx <hq>"
+    type: string
+  Chocobo Companion Stance:
+    default: "Healer"
+    description: 陆行鸟选项: 跟随/自由战术/防护战术/治疗战术/进攻战术，如果不使用陆行鸟则设为 "None"
+    type: string
+  Buy Gysahl Greens?:
+    default: true
+    description: 如果库存中没有，则自动从商人处购买 99 个 萨基尔野菜
+    type: boolean
+  Ignore FATE if progress is over (%):
+    default: 80
+    type: int
+    min: 0
+    max: 100
+    required: true
+    description: Fate完成度高于该数值，则无视该Fate
+  Ignore FATE if duration is less than (mins):
+    default: 3
+    type: int
+    min: 0
+    max: 100
+    required: true
+    description: Fate剩余时间低于该数值，则无视该Fate
+  Ignore boss FATEs until progress is at least (%):
+    default: 0
+    type: int
+    min: 0
+    max: 100
+    required: true
+    description: 当Boss Fate完成度达到该数值时，再去该Boss Fate
+  Ignore Special FATEs until progress is at least (%):
+    default: 20
+    type: int
+    min: 0
+    max: 100
+    required: true
+    description: 当特殊Fate（单人无法完成）完成度达到该数值，再去该Fate
+  Do collection FATEs?:
+    default: true
+    type: boolean
+    description: 是否做收集Fate
+  Do only bonus FATEs?:
+    default: false
+    type: boolean
+    description: 如果为true，则只做奖励提升FATE，忽略其他所有FATE
+  Max melee distance:
+    default: 2.5
+    type: float
+    min: 0
+    max: 30
+    required: true
+    description: 最大近战距离
+  Max ranged distance:
+    default: 20
+    type: float
+    min: 0
+    max: 30
+    required: true
+    description: 最大远程距离
+  Forlorns:
+    default: All
+    type: string
+    required: true
+    description: 是否攻击迷失者和迷失少女（不建议修改）
+  Change instances if no FATEs?:
+    default: true
+    type: boolean
+    description: 当前副本区没有合适的Fate时，是否更换副本区
+  Exchange bicolor gemstones for:
+    default: 图拉尔双色宝石的收据
+    type: string
+    description: 如果您不想换双色物品，请留空。双色票据：旧萨雷安填写 "双色宝石的收据" 九号解决方案则填写 "图拉尔双色宝石的收据" 
+  Self repair?:
+    default: true
+    description: 是否自行修理，关闭后会去海都找修理工
+    type: boolean
+  Pause for retainers?:
+    default: true
+    type: boolean
+    description: 是否自动收雇员，需安装AutoRetainers插件
+  Dump extra gear at GC?:
+    default: true
+    type: boolean
+    description: 自动上交军票，与自动收雇员一起使用，以防它们带回太多东西并堵塞您的背包。
+  Return on death?:
+    default: true
+    type: boolean
+    description: 自动接受死亡通知，在死后回到你选择的水晶
+  Echo logs:
+    default: All
+    type: string
+    description: 修改这个值来控制你在聊天中希望显示多少echo消息/ None 不需要任何消息 /Gems 每个FATE结束后会显示当前双色宝石数量/ All 显示双色宝石数量，并提示下一个要前往的FATE名称
+  Rotation Plugin:
+    default: "Any"
+    type: string
+    description: 选项 - Any/Wrath/RotationSolver/BossMod/BossModReborn. 自动输出插件
+  Dodging Plugin:
+    default: "Any"
+    type: string
+    description: 选项 - Any/BossMod/BossModReborn/None. 自动Ai躲避怪物技能
 [[End Metadata]]
 --]=====]
 --[[
 
 ********************************************************************************
-*                                 Fate农场                                     *
-*                           版本号: 3.0.1 CN-1.10                              *
+*                                  更新日志                                     *
 ********************************************************************************
 
-作者: pot0to (https://ko-fi.com/pot0to)
-原github库: https://github.com/pot0to/pot0to-SND-Scripts/blob/main/Fate%20Farming/Fate%20Farming.lua
-汉化: QianChang 联系方式:2318933089(QQ) 主页(https://github.com/QianChangUwU)
-    -> 2.22.2   Added option to turn off auto return on death
-                Fixed to pick between /vnav flyflag and /vnav moveflag
-                Updated vnav to use flag navigation, since it works better in
-                    occult. Updated to prevent textadvance spam
-                Added more logging for FlyBackToAetheryte
-    -> 2.21.11  在上坐骑后添加1秒等待，这样你就可以牢牢地固定在坐骑上。似乎是
-                    像中文这样的语言执行log和echo
-                    消息速度比英语快，导致下一个Pathfind步骤
-                    在正确安装之前，发生得太快，而
-                    你正处在跳跃的中间。这迫使vnav给予
-                    你是一条步行道，而不是一条飞行道，所以你
-                    有时会卡住。
-    -> 2.21.10  修复对vbmai预设的调用              
-    -> 2.21.9   By Allison
-            增加了检查到FATE距离的优先级，考虑到传送后可能的更短距离。
-            增加了FatePriority设置。默认设置与之前相同，但增加了上述的新检查。
-            优先级为：进度 -> 奖励 -> 剩余时间 -> 距离。
-            增加了设置选项，用于在没有找到FATE时是否在以太之光处等待。如果禁用，你将在FATE完成的地方等待。
-            增加了MinWait设置，因为有时3秒感觉太长了。
-            更改了WaitUpTo的名称以匹配MinWait。
-            增加了在使用RSR进行循环插件时禁用VBM目标选择的检查。
-            对选择下一个FATE后的等待时间进行了小幅调整，结果是在接近FATE时会降落在离中心更远的地方。
-            在移动中增加了新的额外检查，以防止施法取消。
-            可能在从FATE中被推出时搞砸了一些东西。
-            修复了“should it to Turn” -> “should it do Turn”的拼写错误。
-        
+    -> 3.0.9    By Allison.
+                修复Fate完成后角色站立不动的bug。
+                新增自动循环插件和Ai躲避插件的配置选项（修复了多个求解器同时存在时的bug）
+                更新脚本描述以更准确反映功能。
+                清理元数据并调整描述，使其更贴合脚本实际内容。
+                小幅调整战斗相关距离判定逻辑，使其更符合FFXIV对技能可用范围的判定机制（忽略高度差）。有望修复战斗中部分最大距离判定的问题。
+                其他小型错误修复。
+    -> 3.0.6    新增元数据支持
+    -> 3.0.5    修复自动修理功能
+    -> 3.0.4    移除冗余日志输出
+    -> 3.0.2    修复 HasPlugin 检查逻辑
+    -> 3.0.1    修复因拼写错误导致的崩溃问题
+    -> 3.0.0    适配 SND2 框架更新
 
 ********************************************************************************
 *                                    必要插件                                   *
@@ -82,127 +188,13 @@ This Plugins are Optional and not needed unless you have it enabled in the setti
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 ]]
 
---#region Settings
-
 --[[
 ********************************************************************************
-*                                   设置                                   *
+*           Code: Don't touch this unless you know what you're doing           *
 ********************************************************************************
 ]]
-
-Food                                = ""            --如果不想用任何食物，就将 "" 内留空. 如果想自动使用HQ食物就添加 <hq> 在食物后面，例如 "烧烤暗色茄子 <hq>"
-Potion                              = ""            --如果不想用任何药就将 "" 内留空.
-ShouldSummonChocobo                 = true         --是否召唤陆行鸟？
-    ResummonChocoboTimeLeft         = 3 * 60        --如果陆行鸟剩余时间少于这个秒数，则重新召唤，以免在FATE中途消失。
-    ChocoboStance                   = "治疗战术"      --陆行鸟选项: 跟随/自由战术/防护战术/治疗战术/进攻战术
-    ShouldAutoBuyGysahlGreens       = true          --如果野菜用完了，自动从利姆萨·罗敏萨的商人处购买99个。
-MountToUse                          = "随机飞行坐骑"       --在FATE之间飞行时使用的坐骑
-FatePriority                        = {"DistanceTeleport", "Progress", "DistanceTeleport", "Bonus", "TimeLeft", "Distance"}
-
---Fate Combat Settings
-CompletionToIgnoreFate              = 80            --设置一个阈值，如果当前地区已完成的fate数量高于这个阈值，则跳过
-MinTimeLeftToIgnoreFate             = 3*60          --设置一个时间，如果fate剩余时间比这个时间少，则跳过（几个*60秒）
-CompletionToJoinBossFate            = 0             --设置一个数字，如果fate的进度低于这个数字，则跳过 (用于避免单挑boss)
-    CompletionToJoinSpecialBossFates = 20           --对于特殊FATE，如Serpentlord Seethes或Mascot Murder
-    ClassForBossFates               = ""            --如果你想用特定的职业单挑boss，就在""内设置为三个字母的职业缩写（英文缩写）
-                                                        --例如骑士为"PLD"
-JoinCollectionsFates                = true          --设置为false表示永远不做收集FATE
-BonusFatesOnly                      = false         --如果为true，则只做奖励提升FATE，忽略其他所有FATE
-
-MeleeDist                           = 2.5           --近战距离。近战攻击（自动攻击）的最大距离为2.59y，2.60为“目标超出范围”
-RangedDist                          = 20            --远程距离。远程攻击和法术的最大可用距离为25.49y，25.5为“目标超出范围”
-
-RotationPlugin                      = "RSR"         --选项: RSR/BMR/VBM/Wrath/None，自动循环插件
-    RSRAoeType                      = "Full"        --Options: Cleave/Full/Off，RSR的AOE方式
-
-    -- 仅适用于BMR/VBM/Wrath
-    RotationSingleTargetPreset      = ""            --单目标策略的预设名称（用于forlorns）。
-    RotationAoePreset               = ""            --AOE + Buff策略的预设。
-    RotationHoldBuffPreset          = ""            --在FATE进度达到指定百分比时保留120s爆发技能
-    PercentageToHoldBuff            = 65            --理想情况下，你希望充分利用你的增益，高于70%仍然会浪费几秒，如果进度太快。
-DodgingPlugin                       = "VBM"         --选项: BMR/VBM/None。自动躲避插件，如果你的RotationPlugin是BMR/VBM，则此设置将被覆盖。
-
-IgnoreForlorns                      = false         --无视迷失少女
-    IgnoreBigForlornOnly            = false         --仅忽略迷失者
-
---Post Fate Settings
-MinWait                             = 3             --在下一个FATE前等待的最短秒数。
-MaxWait                             = 10            --在下一个FATE前等待的最长秒数。
-                                                        --实际等待时间将是MinWait和MaxWait之间的随机数。
-DownTimeWaitAtNearestAetheryte      = false         --当等待FATE出现时，是否飞到最近的以太水晶并等待？
-EnableChangeInstance                = true          --当没有FATE时是否切换副本区（仅适用于DT FATE）
-    WaitIfBonusBuff                 = true          --如果你有fate奖励增益，则不切换副本区
-    NumberOfInstances               = 2
-ShouldExchangeBicolorGemstones      = true          --是否自动兑换物品
-    ItemToPurchase                  = "图拉尔双色宝石的收据"        -- 双色票据：旧萨雷安填写 "双色宝石的收据" 九号解决方案则填写 "图拉尔双色宝石的收据" 其余物品也可以写名字（仅限非完成度物品）
-SelfRepair                          = true         --是否自己修理，如果设置为 false, 就去 海都找修理工
-    RemainingDurabilityToRepair                    = 20            --设置一个阈值，低于此阈值将会自动修理装备 (如果不需要自动修理，请将其设置为0)
-    ShouldAutoBuyDarkMatter         = true          --如果你没有8级暗物质，则会自动从利姆萨的商人购买一组99个
-ShouldExtractMateria                = true          --是否要自动精炼魔晶石？
-Retainers                           = false         --是否自动收雇员 (需要AutoRetainers插件)
-ShouldGrandCompanyTurnIn            = false         --是否自动交军票 (需要 Deliveroo 插件)
-    InventorySlotsLeft              = 5             --在执行上交前剩余多少空余的背包空间
-
-ReturnOnDeath                       = true          --自动接受死亡后返回
-
-Echo                                = "All"         
---修改这个值来控制你在聊天中希望显示多少echo消息。
---None 不需要任何消息
---Gems 每个FATE结束后会显示当前双色宝石数量
---All 显示双色宝石数量，并提示下一个要前往的FATE名称
-
-CompanionScriptMode                 = false         --Set to true if you are using the fate script with a companion script (such as the Atma Farmer)
-
-
---#endregion Settings
-
---[[
-********************************************************************************
-*           这里是代码：除非你知道你在做什么不然不要动它                           *
-********************************************************************************
-]]
-
---#region Plugin Checks and Setting Init
 
 import("System.Numerics")
-
-if DodgingPlugin == "None" then
-    -- do nothing
-elseif RotationPlugin == "BMR" and DodgingPlugin ~= "BMR" then
-    DodgingPlugin = "BMR"
-elseif RotationPlugin == "VBM" and DodgingPlugin ~= "VBM"  then
-    DodgingPlugin = "VBM"
-end
-
-if not IPC.IsInstalled("vnavmesh") then
-    yield("/echo [FATE]请安装 vnavmesh")
-end
-
-if not IPC.IsInstalled("TextAdvance") then
-    yield("/echo [FATE]请安装 TextAdvance")
-end
-
-if EnableChangeInstance and not IPC.IsInstalled("Lifestream") then
-    yield("/echo [FATE]请安装 Lifestream，或禁用 ChangeInstance")
-end
-
-if Retainers and not IPC.IsInstalled("AutoRetainer") then
-    yield("/echo [FATE]请安装 AutoRetainer")
-end
-
-if ShouldGrandCompanyTurnIn and not IPC.IsInstalled("Deliveroo") then
-    yield("/echo [FATE]请安装Deliveroo")
-end
-
-if not IPC.IsInstalled("YesAlready") then
-    yield("/echo [FATE]请安装 YesAlready")
-end
-
-if not CompanionScriptMode then
-    yield("/at y")
-end
-
---#endregion Plugin Checks and Setting Init
 
 --#region Data
 
@@ -237,27 +229,29 @@ ClassList =
     arc = { classId=5, className="Archer", isMelee=false, isTank=false },
     cnj = { classId=6, className="Conjurer", isMelee=false, isTank=false },
     thm = { classId=7, className="Thaumaturge", isMelee=false, isTank=false },
-    pld = { classId=19, className="骑士",         isMelee=true,  isTank=true },
-    mnk = { classId=20, className="武僧",         isMelee=true,  isTank=false },
-    war = { classId=21, className="战士",           isMelee=true,  isTank=true },
-    drg = { classId=22, className="龙骑士",         isMelee=true,  isTank=false },
-    brd = { classId=23, className="吟游诗人",       isMelee=false, isTank=false },
-    whm = { classId=24, className="白魔法师",       isMelee=false, isTank=false },
-    blm = { classId=25, className="黑魔法师",       isMelee=false, isTank=false },
-    smn = { classId=27, className="召唤师",         isMelee=false, isTank=false },
-    sch = { classId=28, className="学者",           isMelee=false, isTank=false },
-    nin = { classId=30, className="忍者",           isMelee=true,  isTank=false },
-    mch = { classId=31, className="机工士",         isMelee=false, isTank=false},
-    drk = { classId=32, className="暗黑骑士",       isMelee=true,  isTank=true },
-    ast = { classId=33, className="占星术士",       isMelee=false, isTank=false },
-    sam = { classId=34, className="武士",             isMelee=true,  isTank=false },
-    rdm = { classId=35, className="赤魔法师",       isMelee=false, isTank=false },
-    blu = { classId=36, className="青魔法师",       isMelee=false, isTank=false },
-    gnb = { classId=37, className="绝枪战士", isMelee=true,  isTank=true },
-    dnc = { classId=38, className="舞者",         isMelee=false, isTank=false },
-    rpr = { classId=39, className="钐镰客",       isMelee=true,  isTank=false },
-    sge = { classId=40, className="贤者",           isMelee=false, isTank=false },
-    vpr = { classId=41, className="蝰蛇剑士",     isMelee=true,  isTank=false },
+    pld = { classId=19, className="骑士", isMelee=true, isTank=true },
+    mnk = { classId=20, className="武僧", isMelee=true, isTank=false },
+    war = { classId=21, className="战士", isMelee=true, isTank=true },
+    drg = { classId=22, className="龙骑士", isMelee=true, isTank=false },
+    brd = { classId=23, className="吟游诗人", isMelee=false, isTank=false },
+    whm = { classId=24, className="白魔法师", isMelee=false, isTank=false },
+    blm = { classId=25, className="黑魔法师", isMelee=false, isTank=false },
+    acn = { classId=26, className="秘术师", isMelee=false, isTank=false },
+    smn = { classId=27, className="召唤师", isMelee=false, isTank=false },
+    sch = { classId=28, className="学者", isMelee=false, isTank=false },
+    rog = { classId=29, className="双剑师", isMelee=false, isTank=false },
+    nin = { classId=30, className="忍者", isMelee=true, isTank=false },
+    mch = { classId=31, className="机工士", isMelee=false, isTank=false},
+    drk = { classId=32, className="暗黑骑士", isMelee=true, isTank=true },
+    ast = { classId=33, className="占星术士", isMelee=false, isTank=false },
+    sam = { classId=34, className="武士", isMelee=true, isTank=false },
+    rdm = { classId=35, className="赤魔法师", isMelee=false, isTank=false },
+    blu = { classId=36, className="青魔法师", isMelee=false, isTank=false },
+    gnb = { classId=37, className="绝枪战士", isMelee=true, isTank=true },
+    dnc = { classId=38, className="舞者", isMelee=false, isTank=false },
+    rpr = { classId=39, className="钐镰客", isMelee=true, isTank=false },
+    sge = { classId=40, className="贤者", isMelee=false, isTank=false },
+    vpr = { classId=41, className="蝰蛇剑士", isMelee=true, isTank=false },
     pct = { classId=42, className="绘灵法师", isMelee=false, isTank=false }
 }
 
@@ -328,17 +322,97 @@ BicolorExchangeData =
 
 FatesData = {
     {
-        zoneName = "库尔札斯中央高地",
-        zoneId = 155,
-        fatesList= {
+        zoneName = "Middle La Noscea",
+        zoneId = 134,
+        fatesList = {
             collectionsFates= {},
-            otherNpcFates= {},
+            otherNpcFates= {
+                { fateName="Thwack-a-Mole" , npcName="Troubled Tiller" },
+                { fateName="Yellow-bellied Greenbacks", npcName="Yellowjacket Drill Sergeant"},
+                { fateName="The Orange Boxes", npcName="Farmer in Need" }
+            },
             fatesWithContinuations = {},
             blacklistedFates= {}
         }
     },
     {
-        zoneName = "库尔札斯西部高地",
+        zoneName = "Lower La Noscea",
+        zoneId = 135,
+        fatesList = {
+            collectionsFates= {},
+            otherNpcFates= {
+                { fateName="Away in a Bilge Hold" , npcName="Yellowjacket Veteran" },
+                { fateName="Fight the Flower", npcName="Furious Farmer" }
+            },
+            fatesWithContinuations = {},
+            blacklistedFates= {}
+        }
+    },
+    {
+        zoneName = "Central Thanalan",
+        zoneId = 141,
+        fatesList = {
+            collectionsFates= {
+                { fateName="Let them Eat Cactus", npcName="Hungry Hobbledehoy"},
+            },
+            otherNpcFates= {
+                { fateName="A Few Arrows Short of a Quiver" , npcName="Crestfallen Merchant" },
+                { fateName="Wrecked Rats", npcName="Coffer & Coffin Heavy" },
+                { fateName="Something to Prove", npcName="Cowardly Challenger" }
+            },
+            fatesWithContinuations = {},
+            blacklistedFates= {}
+        }
+    },
+    {
+        zoneName = "Eastern Thanalan",
+        zoneId = 145,
+        fatesList = {
+            collectionsFates= {},
+            otherNpcFates= {
+                { fateName="Attack on Highbridge: Denouement" , npcName="Brass Blade" }
+            },
+            fatesWithContinuations = {},
+            blacklistedFates= {}
+        }
+    },
+    {
+        zoneName = "Southern Thanalan",
+        zoneId = 146,
+        fatesList = {
+            collectionsFates= {},
+            otherNpcFates= {},
+            fatesWithContinuations = {},
+            blacklistedFates= {}
+        },
+        flying = false
+    },
+    {
+        zoneName = "Outer La Noscea",
+        zoneId = 180,
+        fatesList = {
+            collectionsFates= {},
+            otherNpcFates= {},
+            fatesWithContinuations = {},
+            blacklistedFates= {}
+        },
+        flying = false
+    },
+    {
+        zoneName = "Coerthas Central Highlands",
+        zoneId = 155,
+        fatesList= {
+            collectionsFates= {},
+            otherNpcFates= {},
+            fatesWithContinuations = {},
+            specialFates = {
+                "He Taketh It with His Eyes" --behemoth
+            },
+            blacklistedFates= {}
+        }
+    },
+    {
+        zoneName = "Coerthas Western Highlands",
         zoneId = 397,
         fatesList= {
             collectionsFates= {},
@@ -348,7 +422,7 @@ FatesData = {
         }
     },
     {
-        zoneName = "摩杜纳",
+        zoneName = "Mor Dhona",
         zoneId = 156,
         fatesList= {
             collectionsFates= {},
@@ -358,7 +432,7 @@ FatesData = {
         }
     },
     {
-        zoneName = "阿巴拉提亚云海",
+        zoneName = "The Sea of Clouds",
         zoneId = 401,
         fatesList= {
             collectionsFates= {},
@@ -368,7 +442,7 @@ FatesData = {
         }
     },
     {
-        zoneName = "魔大陆阿济兹拉",
+        zoneName = "Azys Lla",
         zoneId = 402,
         fatesList= {
             collectionsFates= {},
@@ -378,17 +452,20 @@ FatesData = {
         }
     },
     {
-        zoneName = "龙堡参天高地",
+        zoneName = "The Dravanian Forelands",
         zoneId = 398,
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
             fatesWithContinuations = {},
+            specialFates = {
+                "Coeurls Chase Boys Chase Coeurls" --coeurlregina
+            },
             blacklistedFates= {}
         }
     },
     {
-        zoneName = "龙堡内陆低地",
+        zoneName = "The Dravanian Hinterlands",
         zoneId=399,
         tpZoneId = 478,
         fatesList= {
@@ -399,11 +476,115 @@ FatesData = {
         }
     },
     {
-        zoneName = "翻云雾海",
+        zoneName = "The Churning Mists",
         zoneId=400,
         fatesList= {
             collectionsFates= {},
             otherNpcFates= {},
+            fatesWithContinuations = {},
+            blacklistedFates= {}
+        }
+    },
+    {
+        zoneName = "The Fringes",
+        zoneId = 612,
+        fatesList= {
+            collectionsFates= {
+                { fateName="Showing The Recruits What For", npcName="Storm Commander Bharbennsyn" },
+                { fateName="Get Sharp", npcName="M Tribe Youth" },
+            },
+            otherNpcFates= {
+                { fateName="The Mail Must Get Through", npcName="Storm Herald" },
+                { fateName="The Antlion's Share", npcName="M Tribe Ranger" },
+                { fateName="Double Dhara", npcName="Resistence Fighter" },
+                { fateName="Keeping the Peace", npcName="Resistence Fighter" }
+            },
+            fatesWithContinuations = {},
+            blacklistedFates= {}
+        }
+    },
+    {
+        zoneName = "The Peaks",
+        zoneId = 620,
+        fatesList= {
+            collectionsFates= {
+                { fateName="Fletching Returns", npcName="Sorry Sutler" }
+            },
+            otherNpcFates= {
+                { fateName="Resist, Die, Repeat", npcName="Wounded Fighter" },
+                { fateName="And the Bandits Played On", npcName="Frightened Villager" },
+                { fateName="Forget-me-not", npcName="Coldhearth Resident" },
+                { fateName="Of Mice and Men", npcName="Furious Farmer" }
+            },
+            fatesWithContinuations = {},
+            blacklistedFates= {
+                "The Magitek Is Back", --escort
+                "A New Leaf" --escort
+            }
+        }
+    },
+    {
+        zoneName = "The Lochs",
+        zoneId = 621,
+        fatesList= {
+            collectionsFates= {},
+            otherNpcFates= {},
+            fatesWithContinuations = {},
+            specialFates = {
+                "A Horse Outside" --ixion
+            },
+            blacklistedFates= {}
+        }
+    },
+    {
+        zoneName = "The Ruby Sea",
+        zoneId = 613,
+        fatesList= {
+            collectionsFates= {
+                { fateName="Treasure Island", npcName="Blue Avenger" },
+                { fateName="The Coral High Ground", npcName="Busy Beachcomber" }
+            },
+            otherNpcFates= {
+                { fateName="Another One Bites The Dust", npcName="Pirate Youth" },
+                { fateName="Ray Band", npcName="Wounded Confederate" },
+                { fateName="Bilge-hold Jin", npcName="Green Confederate" }
+            },
+            fatesWithContinuations = {},
+            blacklistedFates= {}
+        }
+    },
+    {
+        zoneName = "Yanxia",
+        zoneId = 614,
+        fatesList= {
+            collectionsFates= {
+                { fateName="Rice and Shine", npcName="Flabbergasted Farmwife" },
+                { fateName="More to Offer", npcName="Ginko" }
+            },
+            otherNpcFates= {
+                { fateName="Freedom Flies", npcName="Kinko" },
+                { fateName="A Tisket, a Tasket", npcName="Gyogun of the Most Bountiful Catch" }
+            },
+            specialFates = {
+                "Foxy Lady" --foxyyy
+            },
+            fatesWithContinuations = {},
+            blacklistedFates= {}
+        }
+    },
+    {
+        zoneName = "The Azim Steppe",
+        zoneId = 622,
+        fatesList= {
+            collectionsFates= {
+                { fateName="The Dataqi Chronicles: Duty", npcName="Altani" }
+            },
+            otherNpcFates= {
+                { fateName="Rock for Food", npcName="Oroniri Youth" },
+                { fateName="Killing Dzo", npcName="Olkund Dzotamer" },
+                { fateName="They Shall Not Want", npcName="Mol Shepherd" },
+                { fateName="A Good Day to Die", npcName="Qestiri Merchant" }
+            },
             fatesWithContinuations = {},
             blacklistedFates= {}
         }
@@ -765,7 +946,7 @@ FatesData = {
 
 --#endregion Data
 
--- TODO
+--#region Utils
 function mysplit(inputstr)
   for str in string.gmatch(inputstr, "[^%.]+") do
     return str
@@ -803,7 +984,6 @@ function GetTargetName()
 end
 
 function AttemptToTargetClosestFateEnemy()
-    Dalamud.Log("[FATE] Check 24")
     --Svc.Targets.Target = Svc.Objects.OrderBy(DistanceToObject).FirstOrDefault(o => o.IsTargetable && o.IsHostile() && !o.IsDead && (distance == 0 || DistanceToObject(o) <= distance) && o.Struct()->FateId > 0);
     local closestTarget = nil
     local closestTargetDistance = math.maxinteger
@@ -822,18 +1002,15 @@ function AttemptToTargetClosestFateEnemy()
     if closestTarget ~= nil then
         Svc.Targets.Target = closestTarget
     end
-    Dalamud.Log("[FATE] Check 36")
 end
 
 -- Calculates a point on the line from 'start' to 'end',
 -- stopping 'd' units before reaching 'end'
 function MoveToTargetHitbox()
-    Dalamud.Log("[FATE] Check 51")
     if Svc.Targets.Target == nil then
         return
     end
 
-    Dalamud.Log("[FATE] Check 52")
     -- Vector from start to end
     local distance = GetDistanceToTarget()
 
@@ -842,29 +1019,33 @@ function MoveToTargetHitbox()
         return
     end
 
-    Dalamud.Log("[FATE] Check 53")
     -- Scale direction vector to (distance - d)
     local newDistance = distance - GetTargetHitboxRadius()
     if newDistance <= 0 then
         return
     end
 
-    Dalamud.Log("[FATE] Check 54")
     -- Calculate normalized direction vector
     local norm = (Svc.Targets.Target.Position - Svc.ClientState.LocalPlayer.Position) / distance
     local edgeOfHitbox = (norm*newDistance) + Svc.ClientState.LocalPlayer.Position
     local newPos = nil
     local halfExt = 10
     while newPos == nil do
-        Dalamud.Log("[FATE] Check 55")
         newPos = IPC.vnavmesh.PointOnFloor(edgeOfHitbox, false, halfExt)
         halfExt = halfExt + 10
     end
     yield("/vnav moveto "..newPos.X.." "..newPos.Y.." "..newPos.Z)
-
-    Dalamud.Log("[FATE] Check 56")
 end
 
+function HasPlugin(name)
+    for plugin in luanet.each(Svc.PluginInterface.InstalledPlugins) do
+        if plugin.InternalName == name then
+            return true
+        end
+    end
+    return false
+end
+--#endregion Utils
 
 --#region Fate Functions
 function IsCollectionsFate(fateName)
@@ -930,19 +1111,20 @@ function GetFateNpcName(fateName)
 end
 
 function IsFateActive(fate)
-    return fate.State ~= FateState.Ending and fate.State ~= FateState.Ended and fate.State ~= FateState.Failed
+    if fate.State == nil then
+        return false
+    else
+        return fate.State ~= FateState.Ending and fate.State ~= FateState.Ended and fate.State ~= FateState.Failed
+    end
 end
 
 function InActiveFate()
-    Dalamud.Log("[FATE] Check 28")
     local activeFates = Fates.GetActiveFates()
     for i=0, activeFates.Count-1 do
-        if activeFates[i].InFate and IsFateActive(activeFates[i]) then
-            Dalamud.Log("[FATE] Check 29")
+        if activeFates[i].InFate == true and IsFateActive(activeFates[i]) then
             return true
         end
     end
-    Dalamud.Log("[FATE] Check 30")
     return false
 end
 
@@ -1003,10 +1185,8 @@ function BuildFateTable(fateObj)
         isBonusFate = fateObj.IsBonus,
     }
 
-    Dalamud.Log("[FATE] Check 5")
     fateTable.npcName = GetFateNpcName(fateTable.fateName)
 
-    Dalamud.Log("[FATE] Check 6")
     local currentTime = EorzeaTimeToUnixTime(Instances.Framework.EorzeaTime)
     if fateTable.startTime == 0 then
         fateTable.timeLeft = 900
@@ -1015,18 +1195,12 @@ function BuildFateTable(fateObj)
         fateTable.timeLeft = fateTable.duration - fateTable.timeElapsed
     end
 
-    Dalamud.Log("[FATE] Check 7")
     fateTable.isCollectionsFate = IsCollectionsFate(fateTable.fateName)
-    Dalamud.Log("[FATE] Check 7.1")
     fateTable.isBossFate = IsBossFate(fateTable.fateObject)
-    Dalamud.Log("[FATE] Check 7.2")
     fateTable.isOtherNpcFate = IsOtherNpcFate(fateTable.fateName)
-    Dalamud.Log("[FATE] Check 7.3")
     fateTable.isSpecialFate = IsSpecialFate(fateTable.fateName)
-    Dalamud.Log("[FATE] Check 7.4")
     fateTable.isBlacklistedFate = IsBlacklistedFate(fateTable.fateName)
 
-    Dalamud.Log("[FATE] Check 8")
     fateTable.continuationIsBoss = false
     fateTable.hasContinuation = false
     for _, continuationFate in ipairs(SelectedZone.fatesList.fatesWithContinuations) do
@@ -1041,13 +1215,14 @@ end
 
 --[[
     Selects the better fate based on the priority order defined in FatePriority.
-    Default Priority order is "Progress" -> "DistanceTeleport" -> "Bonus" -> "TimeLeft" -> "Distance"
+    Default Priority order is "DistanceTeleport" -> "Progress" -> "Bonus" -> "TimeLeft" -> "Distance"
 ]]
 function SelectNextFateHelper(tempFate, nextFate)
     if nextFate == nil then
         Dalamud.Log("[FATE] nextFate is nil")
         return tempFate
     elseif BonusFatesOnly then
+        Dalamud.Log("[FATE] only doing bonus fates")
         --Check if WaitForBonusIfBonusBuff is true, and have eithe buff, then set BonusFatesOnlyTemp to true
         if not tempFate.isBonusFate and nextFate ~= nil and nextFate.isBonusFate then
             return nextFate
@@ -1121,6 +1296,7 @@ function SelectNextFate()
         if not (tempFate.position.X == 0 and tempFate.position.Z == 0) then -- sometimes game doesn't send the correct coords
             if not tempFate.isBlacklistedFate then -- check fate is not blacklisted for any reason
                 if tempFate.isBossFate then
+                    Dalamud.Log("[FATE] Is a boss fate")
                     if (tempFate.isSpecialFate and tempFate.fateObject.Progress >= CompletionToJoinSpecialBossFates) or
                         (not tempFate.isSpecialFate and tempFate.fateObject.Progress >= CompletionToJoinBossFate) then
                         nextFate = SelectNextFateHelper(tempFate, nextFate)
@@ -1128,27 +1304,39 @@ function SelectNextFate()
                         Dalamud.Log("[FATE] Skipping fate #"..tempFate.fateId.." "..tempFate.fateName.." due to boss fate with not enough progress.")
                     end
                 elseif (tempFate.isOtherNpcFate or tempFate.isCollectionsFate) and tempFate.startTime == 0 then
-                    if not Dalamud.Log("[FATE] SelectNextFate->nextFate is nil") and nextFate == nil then -- pick this if there's nothing else
+                    Dalamud.Log("[FATE] Is not an npc or collections fate")
+                    if nextFate == nil then -- pick this if there's nothing else
+                        Dalamud.Log("[FATE] Selecting this fate because there's nothing else so far")
                         nextFate = tempFate
-                    elseif not Dalamud.Log("[FATE] SelectNextFate->check tempFate.isBonsuFate") and tempFate.isBonusFate then
+                    elseif tempFate.isBonusFate then
+                        Dalamud.Log("[FATE] tempFate.isBonusFate")
                         nextFate = SelectNextFateHelper(tempFate, nextFate)
-                    elseif not Dalamud.Log("[FATE] SelectNextFate->check nextFate.startTime") and nextFate.startTime == 0 then -- both fates are unopened npc fates
+                    elseif nextFate.startTime == 0 then -- both fates are unopened npc fates
+                        Dalamud.Log("[FATE] Both fates are unopened npc fates")
                         nextFate = SelectNextFateHelper(tempFate, nextFate)
+                    else
+                        Dalamud.Log("[FATE] else")
                     end
                 elseif tempFate.duration ~= 0 then -- else is normal fate. avoid unlisted talk to npc fates
+                    Dalamud.Log("[FATE] Normal fate")
                     nextFate = SelectNextFateHelper(tempFate, nextFate)
+                else
+                    Dalamud.Log("[FATE] Fate duration was zero.")
                 end
                 Dalamud.Log("[FATE] Finished considering fate #"..tempFate.fateId.." "..tempFate.fateName)
             else
                 Dalamud.Log("[FATE] Skipping fate #"..tempFate.fateId.." "..tempFate.fateName.." due to blacklist.")
             end
+        else
+            Dalamud.Log("[FATE] FATE coords were zeroed out")
         end
+    
     end
 
     Dalamud.Log("[FATE] Finished considering all fates")
 
     if nextFate == nil then
-        Dalamud.Log("[FATE] 没有找到合适的FATE")
+        Dalamud.Log("[FATE] 没有找到合适的FATE.")
         if Echo == "All" then
             yield("/echo [FATE] 没有找到合适的FATE.")
         end
@@ -1162,9 +1350,7 @@ end
 
 function AcceptNPCFateOrRejectOtherYesno()
     if Addons.GetAddon("SelectYesno").Ready then
-        Dalamud.Log("[FATE] Check 45")
         local dialogBox = GetNodeText("SelectYesno", 1, 2)
-        Dalamud.Log("[FATE] Check 46")
         if type(dialogBox) == "string" and dialogBox:find("这个FATE的推荐等级是") then
             yield("/callback SelectYesno true 0") --accept fate
         else
@@ -1192,6 +1378,26 @@ function GetDistanceToTarget()
         return math.maxinteger
     end
 end
+
+
+function GetDistanceToTargetFlat()
+    if Svc.Targets.Target ~= nil then
+        return GetDistanceToPointFlat(Svc.Targets.Target.Position)
+    else
+        return math.maxinteger
+    end
+end
+
+function GetDistanceToPointFlat(vec3)
+    return DistanceBetweenFlat(Svc.ClientState.LocalPlayer.Position, vec3)
+end
+
+function DistanceBetweenFlat(pos1, pos2)
+    local flat1 = Vector3(pos1.X, 0, pos1.Z)
+    local flat2 = Vector3(pos2.X, 0, pos2.Z)
+    return Vector3.Distance(flat1, flat2)
+end
+
 
 function RandomAdjustCoordinates(position, maxDistance)
     local angle = math.random() * 2 * math.pi
@@ -1246,7 +1452,7 @@ function GetDistanceToPointWithAetheryteTravel(vec3)
     -- Get the direct flight distance (no aetheryte)
     local directFlightDistance = GetDistanceToPoint(vec3)
     Dalamud.Log("[FATE] Direct flight distance is: " .. directFlightDistance)
-    
+
     -- Get the distance to the closest aetheryte, including teleportation penalty
     local distanceToAetheryte = DistanceFromClosestAetheryteToPoint(vec3, 200)
     Dalamud.Log("[FATE] Distance via closest Aetheryte is: " .. (distanceToAetheryte or "nil"))
@@ -1631,7 +1837,6 @@ end
 --Paths to the Fate. CurrentFate is set here to allow MovetoFate to change its mind,
 --so CurrentFate is possibly nil.
 function MoveToFate()
-    Dalamud.Log("[FATE] Check 9")
     SuccessiveInstanceChanges = 0
 
     if not Player.Available then
@@ -1647,22 +1852,17 @@ function MoveToFate()
     end
 
     NextFate = SelectNextFate()
-    Dalamud.Log("[FATE] Check 13")
     if NextFate == nil then -- when moving to next fate, CurrentFate == NextFate
-        Dalamud.Log("[FATE] Check 14")
         yield("/vnav stop")
         State = CharacterState.ready
         Dalamud.Log("[FATE] State Change: Ready")
         return
     elseif CurrentFate == nil or NextFate.fateId ~= CurrentFate.fateId then
-        Dalamud.Log("[FATE] Check 15")
         yield("/vnav stop")
         CurrentFate = NextFate
         SetMapFlag(SelectedZone.zoneId, CurrentFate.position)
         return
     end
-
-    Dalamud.Log("[FATE] Check 11")
 
     -- change to secondary class if it's a boss fate
     if BossFatesClass ~= nil then
@@ -1676,10 +1876,8 @@ function MoveToFate()
         end
     end
 
-    Dalamud.Log("[FATE] Check 21")
     -- upon approaching fate, pick a target and switch to pathing towards target
     if GetDistanceToPoint(CurrentFate.position) < 60 then
-        Dalamud.Log("[FATE] Check 22")
         if Svc.Targets.Target ~= nil then
             Dalamud.Log("[FATE] Found FATE target, immediate rerouting")
             yield("/wait 0.1")
@@ -1698,7 +1896,6 @@ function MoveToFate()
             end
             return
         else
-            Dalamud.Log("[FATE] Check 23")
             if (CurrentFate.isOtherNpcFate or CurrentFate.isCollectionsFate) and not InActiveFate() then
                 yield("/target "..CurrentFate.npcName)
             else
@@ -1709,10 +1906,8 @@ function MoveToFate()
         end
     end
 
-    Dalamud.Log("[FATE] Check 16")
     -- check for stuck
     if (IPC.vnavmesh.IsRunning() or IPC.vnavmesh.PathfindInProgress()) and Svc.Condition[CharacterCondition.mounted] then
-        Dalamud.Log("[FATE] Check 17")
         local now = os.clock()
         if now - LastStuckCheckTime > 10 then
 
@@ -1730,7 +1925,6 @@ function MoveToFate()
         return
     end
 
-    Dalamud.Log("[FATE] Check 18")
     if not MovingAnnouncementLock then
         Dalamud.Log("[FATE] 移动到FATE #"..CurrentFate.fateId.." "..CurrentFate.fateName)
         MovingAnnouncementLock = true
@@ -1749,11 +1943,8 @@ function MoveToFate()
         nearestFloor = RandomAdjustCoordinates(CurrentFate.position, 10)
     end
 
-    Dalamud.Log("[FATE] Check 10")
     if GetDistanceToPoint(nearestFloor) > 5 then
-        Dalamud.Log("[FATE] Check 11")
         if not Svc.Condition[CharacterCondition.mounted] then
-            Dalamud.Log("[FATE] Check 12")
             State = CharacterState.mounting
             Dalamud.Log("[FATE] State Change: Mounting")
             return
@@ -1770,9 +1961,7 @@ function MoveToFate()
 end
 
 function InteractWithFateNpc()
-    Dalamud.Log("[FATE] Check 20")
     if InActiveFate() or CurrentFate.startTime > 0 then
-        Dalamud.Log("[FATE] Check 31")
         yield("/vnav stop")
         State = CharacterState.doFate
         Dalamud.Log("[FATE] State Change: DoFate")
@@ -1786,30 +1975,24 @@ function InteractWithFateNpc()
         end
         return
     else
-        Dalamud.Log("[FATE] Check 27")
         -- if target is already selected earlier during pathing, avoids having to target and move again
         if (Svc.Targets.Target == nil or GetTargetName()~=CurrentFate.npcName) then
-            Dalamud.Log("[FATE] Check 35")
             yield("/target "..CurrentFate.npcName)
             return
         end
 
-        Dalamud.Log("[FATE] Check 32")
         if Svc.Condition[CharacterCondition.mounted] then
             State = CharacterState.npcDismount
             Dalamud.Log("[FATE] State Change: NPCDismount")
             return
         end
 
-        Dalamud.Log("[FATE] Check 33")
         if GetDistanceToPoint(Svc.Targets.Target.Position) > 5 then
             MoveToNPC()
             return
         end
 
-        Dalamud.Log("[FATE] Check 34")
         if Addons.GetAddon("SelectYesno").Ready then
-            Dalamud.Log("[FATE] Check 44")
             AcceptNPCFateOrRejectOtherYesno()
         elseif not Svc.Condition[CharacterCondition.occupied] then
             yield("/interact")
@@ -1905,7 +2088,7 @@ function SummonChocobo()
         if Inventory.GetItemCount(4868) > 0 then
             yield("/item 基萨尔野菜")
             yield("/wait 3")
-            yield('/cac '..ChocoboStance..'')
+            yield('/cac "'..ChocoboStance..' stance"')
         elseif ShouldAutoBuyGysahlGreens then
             State = CharacterState.autoBuyGysahlGreens
             Dalamud.Log("[FATE] State Change: AutoBuyGysahlGreens")
@@ -1933,7 +2116,7 @@ function AutoBuyGysahlGreens()
             TeleportTo("利姆萨·罗敏萨下层甲板")
             return
         else
-            local gysahlGreensVendor = { position=Vector3(-62.1, 18.0, 9.4), npcName="班戈·赞戈" }
+            local gysahlGreensVendor = { position=Vector3(-62.1, 18.0, 9.4), npcName="Bango Zango" }
             if GetDistanceToPoint(gysahlGreensVendor.position) > 5 then
                 if not (IPC.vnavmesh.IsRunning() or IPC.vnavmesh.PathfindInProgress()) then
                     IPC.vnavmesh.PathfindAndMoveTo(gysahlGreensVendor.position, false)
@@ -1955,7 +2138,7 @@ function AutoBuyGysahlGreens()
                 end
             else
                 yield("/vnav stop")
-                yield("/targetnpc "..gysahlGreensVendor.npcName)
+                yield("/target "..gysahlGreensVendor.npcName)
             end
         end
     end
@@ -1973,8 +2156,15 @@ function GetTargetHitboxRadius()
     end
 end
 
+function GetPlayerHitboxRadius()
+    if Svc.ClientState.LocalPlayer ~= nil then
+        return Svc.ClientState.LocalPlayer.HitboxRadius
+    else
+        return 0
+    end
+end
+
 function TurnOnAoes()
-    Dalamud.Log("[FATE] Check 37")
     if not AoesOn then
         if RotationPlugin == "RSR" then
             yield("/rotation off")
@@ -1995,7 +2185,6 @@ function TurnOnAoes()
         end
         AoesOn = true
     end
-    Dalamud.Log("[FATE] Check 38")
 end
 
 function TurnOffAoes()
@@ -2024,10 +2213,13 @@ function TurnOffRaidBuffs()
 end
 
 function SetMaxDistance()
-    MaxDistance = MeleeDist --default to melee distance
     --ranged and casters have a further max distance so not always running all way up to target
-    if not Player.Job.IsMelee then
+    if not Player.Job.IsMeleeDPS or not Player.Job.IsTank then
         MaxDistance = RangedDist
+        Dalamud.Log("[FATE] Setting max distance to "..RangedDist)
+    else
+        MaxDistance = MeleeDist --default to melee distance
+        Dalamud.Log("[FATE] Setting max distance to "..MeleeDist)
     end
 end
 
@@ -2147,7 +2339,7 @@ function HandleUnexpectedCombat()
 
     -- pathfind closer if enemies are too far
     if Svc.Targets.Target ~= nil then
-        if GetDistanceToTarget() > (MaxDistance + GetTargetHitboxRadius()) then
+        if GetDistanceToTargetFlat() > (MaxDistance + GetTargetHitboxRadius() + GetPlayerHitboxRadius()) then
             if not (IPC.vnavmesh.PathfindInProgress() or IPC.vnavmesh.IsRunning()) then
                 if Player.CanFly and SelectedZone.flying then
                     yield("/vnav flytarget")
@@ -2172,8 +2364,10 @@ function HandleUnexpectedCombat()
     yield("/wait 1")
 end
 
+
+
 function DoFate()
-    Dalamud.Log("[FATE] Check 61")
+    Dalamud.Log("[FATE] DoFate")
     if WaitingForFateRewards == nil or WaitingForFateRewards.fateId ~= CurrentFate.fateId then
         WaitingForFateRewards = CurrentFate
         Dalamud.Log("[FATE] WaitingForFateRewards DoFate: "..tostring(WaitingForFateRewards.fateId))
@@ -2190,14 +2384,10 @@ function DoFate()
         yield("/gs change "..MainClass.className)
         yield("/wait 1")
         return
-    elseif not Dalamud.Log("[FATE] Check 62") and InActiveFate() and (CurrentFate.fateObject.MaxLevel < Player.Job.Level) and not Player.IsLevelSynced then
-        Dalamud.Log("[FATE] Check 60")
+    elseif InActiveFate() and (CurrentFate.fateObject.MaxLevel < Player.Job.Level) and not Player.IsLevelSynced then
         yield("/lsync")
         yield("/wait 0.5") -- give it a second to register
-    elseif not Dalamud.Log("[FATE] Check 63") and IsFateActive(CurrentFate.fateObject) and not InActiveFate() and CurrentFate.fateObject.Progress ~= nil and CurrentFate.fateObject.Progress < 100 and
-        (GetDistanceToPoint(CurrentFate.position) < CurrentFate.fateObject.Radius + 10) and
-        not Svc.Condition[CharacterCondition.mounted] and not (IPC.vnavmesh.IsRunning() or IPC.vnavmesh.PathfindInProgress())
-    then -- got pushed out of fate. go back
+    elseif IsFateActive(CurrentFate.fateObject) and not InActiveFate() and CurrentFate.fateObject.Progress ~= nil and CurrentFate.fateObject.Progress < 100 and (GetDistanceToPoint(CurrentFate.position) < CurrentFate.fateObject.Radius + 10) and not Svc.Condition[CharacterCondition.mounted] and not (IPC.vnavmesh.IsRunning() or IPC.vnavmesh.PathfindInProgress()) then -- got pushed out of fate. go back
         yield("/vnav stop")
         yield("/wait 1")
         Dalamud.Log("[FATE] pushed out of fate going back!")
@@ -2262,7 +2452,7 @@ function DoFate()
             if not ForlornMarked then
                 yield("/enemysign attack1")
                 if Echo == "All" then
-                    yield("/echo 发现迷失者! <se.3>")
+                    yield("/echo 发现迷失者！")
                 end
                 TurnOffAoes()
                 ForlornMarked = true
@@ -2275,42 +2465,34 @@ function DoFate()
         TurnOnAoes()
     end
 
-    Dalamud.Log("[FATE] Check 39")
     -- targets whatever is trying to kill you
     if Entity.Target == nil then
         yield("/battletarget")
     end
 
     -- clears target
-    Dalamud.Log("[FATE] Check 40")
     if Entity.Target ~= nil and Entity.Target.FateId ~= CurrentFate.fateId and not Entity.Target.IsInCombat then
-        Dalamud.Log("[FATE] Check 41")
         Entity.Target:ClearTarget()
     end
 
-    Dalamud.Log("[FATE] Check 42")
     -- do not interrupt casts to path towards enemies
     if Svc.Condition[CharacterCondition.casting] then
         return
     end
 
-    Dalamud.Log("[FATE] Check 49")
     --hold buff thingy
     if CurrentFate.fateObject.Progress ~= nil and CurrentFate.fateObject.Progress >= PercentageToHoldBuff then
         TurnOffRaidBuffs()
     end
 
-    Dalamud.Log("[FATE] Check 43")
     -- pathfind closer if enemies are too far
     if not Svc.Condition[CharacterCondition.inCombat] then
-        Dalamud.Log("[FATE] Check 47")
         if Svc.Targets.Target ~= nil then
-            Dalamud.Log("[FATE] Check 57")
-            if GetDistanceToTarget() <= (MaxDistance + GetTargetHitboxRadius()) then
+            if GetDistanceToTargetFlat() <= (MaxDistance + GetTargetHitboxRadius() + GetPlayerHitboxRadius()) then
                 if IPC.vnavmesh.PathfindInProgress() or IPC.vnavmesh.IsRunning() then
                     yield("/vnav stop")
                     yield("/wait 5.002") -- wait 5s before inching any closer
-                elseif (GetDistanceToTarget() > (1 + GetTargetHitboxRadius())) and not Svc.Condition[CharacterCondition.casting] then -- never move into hitbox
+                elseif (GetDistanceToTargetFlat() > (1 + GetTargetHitboxRadius() + GetPlayerHitboxRadius())) and not Svc.Condition[CharacterCondition.casting] then -- never move into hitbox
                     yield("/vnav movetarget")
                     yield("/wait 1") -- inch closer by 1s
                 end
@@ -2320,10 +2502,8 @@ function DoFate()
                     MoveToTargetHitbox()
                 end
             end
-            Dalamud.Log("[FATE] Check 59")
             return
         else
-            Dalamud.Log("[FATE] Check 58")
             AttemptToTargetClosestFateEnemy()
             yield("/wait 1") -- wait in case target doesn't stick
             if (Svc.Targets.Target == nil) and not Svc.Condition[CharacterCondition.casting] then
@@ -2331,8 +2511,7 @@ function DoFate()
             end
         end
     else
-        Dalamud.Log("[FATE] Check 48")
-        if Svc.Targets.Target ~= nil and (GetDistanceToTarget() <= (MaxDistance + GetTargetHitboxRadius())) then
+        if Svc.Targets.Target ~= nil and (GetDistanceToTargetFlat() <= (MaxDistance + GetTargetHitboxRadius() + GetPlayerHitboxRadius())) then
             if IPC.vnavmesh.PathfindInProgress() or IPC.vnavmesh.IsRunning() then
                 yield("/vnav stop")
             end
@@ -2349,8 +2528,6 @@ function DoFate()
             end
         end
     end
-
-    Dalamud.Log("[FATE] Check 50")
 end
 
 --#endregion
@@ -2358,7 +2535,6 @@ end
 --#region State Transition Functions
 
 function Ready()
-    Dalamud.Log("[FATE] Check 1")
     FoodCheck()
     PotionCheck()
 
@@ -2367,14 +2543,11 @@ function Ready()
     ForlornMarked = false
     MovingAnnouncementLock = false
 
-    Dalamud.Log("[FATE] Check 2")
     local shouldWaitForBonusBuff = WaitIfBonusBuff and (HasStatusId(1288) or HasStatusId(1289))
     local needsRepair = Inventory.GetItemsInNeedOfRepairs(RemainingDurabilityToRepair)
     local spiritbonded = Inventory.GetSpiritbondedItems()
 
-    Dalamud.Log("[FATE] Check 3")
     NextFate = SelectNextFate()
-    Dalamud.Log("[FATE] Check 4")
     if CurrentFate ~= nil and not IsFateActive(CurrentFate.fateObject) then
         CurrentFate = nil
     end
@@ -2408,11 +2581,15 @@ function Ready()
             yield("/wait 10")
         end
         return
-    elseif not Dalamud.Log("[FATE] Ready -> ExchangingVouchers") and WaitingForFateRewards == nil and
+    elseif not Dalamud.Log("[FATE] Ready -> ExchangingVouchers") and
         ShouldExchangeBicolorGemstones and (BicolorGemCount >= 1400) and not shouldWaitForBonusBuff
     then
-        State = CharacterState.exchangingVouchers
-        Dalamud.Log("[FATE] State Change: ExchangingVouchers")
+        if WaitingForFateRewards == nil then
+            State = CharacterState.exchangingVouchers
+            Dalamud.Log("[FATE] State Change: ExchangingVouchers")
+        else
+            Dalamud.Log("[FATE] Waiting for fate rewards: "..WaitingForFateRewards.fateId)
+        end
     elseif not Dalamud.Log("[FATE] Ready -> ProcessRetainers") and WaitingForFateRewards == nil and
         Retainers and ARRetainersWaitingToBeProcessed() and Inventory.GetFreeInventorySlots() > 1  and not shouldWaitForBonusBuff
     then
@@ -2468,9 +2645,9 @@ function Ready()
     if not GemAnnouncementLock and (Echo == "All" or Echo == "Gems") then
         GemAnnouncementLock = true
         if BicolorGemCount >= 1400 then
-            yield("/echo [FATE] 你已经有了 "..tostring(BicolorGemCount).."/1500 gems! <se.3>")
+            yield("/echo [FATE] 你已经有了 "..tostring(BicolorGemCount).."/1500 双色宝石 <se.3>")
         else
-            yield("/echo [FATE] 双色宝石: "..tostring(BicolorGemCount).."/1500")
+            yield("/echo [FATE] 当前双色宝石: "..tostring(BicolorGemCount).."/1500")
         end
     end
 end
@@ -2676,7 +2853,7 @@ function Repair()
     local hawkersAlleyAethernetShard = { x=-213.95, y=15.99, z=49.35 }
     if SelfRepair then
         if Inventory.GetItemCount(33916) > 0 then
-            if Addons.GetAddon("Shop") then
+            if Addons.GetAddon("Shop").Ready then
                 yield("/callback Shop true -1")
                 return
             end
@@ -2704,7 +2881,7 @@ function Repair()
         elseif ShouldAutoBuyDarkMatter then
             if Svc.ClientState.TerritoryType ~=  129 then
                 if Echo == "All" then
-                    yield("/echo 没有暗物质了！去海都买点吧")
+                    yield("/echo 没有暗物质了！去海都买点吧.")
                 end
                 TeleportTo("利姆萨·罗敏萨下层甲板")
                 return
@@ -2762,7 +2939,7 @@ function Repair()
                 end
             end
         else
-            State = CharacterState.Ready
+            State = CharacterState.ready
             Dalamud.Log("[FATE] State Change: Ready")
         end
     end
@@ -2886,6 +3063,145 @@ CharacterState = {
 
 Dalamud.Log("[FATE] Starting fate farming script.")
 
+Food = Config.Get("Food")
+Potion = Config.Get("Potion")
+ResummonChocoboTimeLeft         = 3 * 60        --Resummons chocobo if there's less than this many seconds left on the timer, so it doesn't disappear on you in the middle of a fate.
+ChocoboStance = Config.Get("Chocobo Companion Stance") -- Options: Follow, Free, Defender, Healer, Attacker, None. Do not summon if None.
+ShouldSummonChocobo = ChocoboStance == "跟随"
+    or ChocoboStance == "自由战术"
+    or ChocoboStance == "防护战术"
+    or ChocoboStance == "治疗战术"
+    or ChocoboStance == "进攻战术"
+
+ShouldAutoBuyGysahlGreens = Config.Get("Buy Gysahl Greens?")    --
+MountToUse                          = "mount roulette"       --The mount you'd like to use when flying between fates
+FatePriority                        = {"DistanceTeleport", "Progress", "Bonus", "TimeLeft", "Distance"}
+
+--Fate Combat Settings
+CompletionToIgnoreFate = Config.Get("Ignore FATE if progress is over (%)")
+MinTimeLeftToIgnoreFate = Config.Get("Ignore FATE if duration is less than (mins)")*60
+CompletionToJoinBossFate = Config.Get("Ignore boss FATEs until progress is at least (%)")
+CompletionToJoinSpecialBossFates = Config.Get("Ignore Special FATEs until progress is at least (%)")
+ClassForBossFates = ""            --If you want to use a different class for boss fates, set this to the 3 letter abbreviation
+                                                        --for the class. Ex: "PLD"
+JoinCollectionsFates = Config.Get("Do collection FATEs?")
+BonusFatesOnly = Config.Get("Do only bonus FATEs?")         --If true, will only do bonus fates and ignore everything else
+
+MeleeDist = Config.Get("Max melee distance")
+RangedDist = Config.Get("Max ranged distance")
+
+RotationPlugin = Config.Get("Rotation Plugin")
+if RotationPlugin == "Any" then
+    if HasPlugin("Wrath") then
+        RotationPlugin = "Wrath"
+    elseif HasPlugin("RotationSolver") then
+        RotationPlugin = "RSR"
+    elseif HasPlugin("BossModReborn") then
+        RotationPlugin = "BMR"
+    elseif HasPlugin("BossMod") then
+        RotationPlugin = "VBM"
+    end
+elseif RotationPlugin == "Wrath" and HasPlugin("Wrath") then
+    RotationPlugin = "Wrath"
+elseif RotationPlugin == "RotationSolver" and HasPlugin("RotationSolver") then
+    RotationPlugin = "RSR"
+elseif RotationPlugin == "BossModReborn" and HasPlugin("BossModReborn") then
+    RotationPlugin = "BMR"
+elseif RotationPlugin == "BossMod" and HasPlugin("BossMod") then
+    RotationPlugin = "VBM"
+else
+    StopScript = true
+end
+    RSRAoeType                      = "Full"        --Options: Cleave/Full/Off
+
+    -- For BMR/VBM/Wrath
+    RotationSingleTargetPreset      = ""            --Preset name with single target strategies (for forlorns). TURN OFF AUTOMATIC TARGETING FOR THIS PRESET
+    RotationAoePreset               = ""            --Preset with AOE + Buff strategies.
+    RotationHoldBuffPreset          = ""            --Preset to hold 2min burst when progress gets to seleted %
+    PercentageToHoldBuff            = 65            --Ideally you'll want to make full use of your buffs, higher than 70% will still waste a few seconds if progress is too fast.
+
+    IgnoreForlorns = false
+IgnoreBigForlornOnly = false
+Forlorns = Config.Get("Forlorns")
+if Forlorns == "None" then
+    IgnoreForlorns = true
+elseif Forlorns == "Small" then
+    IgnoreBigForlornOnly = true
+end
+
+--Post Fate Settings
+MinWait                             = 3             --Min number of seconds it should wait until mounting up for next fate.
+MaxWait                             = 10            --Max number of seconds it should wait until mounting up for next fate.
+                                                        --Actual wait time will be a randomly generated number between MinWait and MaxWait.
+DownTimeWaitAtNearestAetheryte      = false         --When waiting for fates to pop, should you fly to the nearest Aetheryte and wait there?
+EnableChangeInstance = Config.Get("Change instances if no FATEs?")
+WaitIfBonusBuff = true          --Don't change instances if you have the Twist of Fate bonus buff
+NumberOfInstances = 2
+ShouldExchangeBicolorGemstones = Config.Get("Exchange bicolor gemstones?")
+ItemToPurchase = Config.Get("Exchange bicolor gemstones for")
+ShouldExchangeBicolorGemstones = true
+if ItemToPurchase == "" or ItemToPurchase == nil then
+    ShouldExchangeBicolorGemstones = false
+end
+SelfRepair = Config.Get("Self repair?")
+RemainingDurabilityToRepair     = 10            --the amount it needs to drop before Repairing (set it to 0 if you don't want it to repair)
+ShouldAutoBuyDarkMatter         = true          --Automatically buys a 99 stack of Grade 8 Dark Matter from the Limsa gil vendor if you're out
+ShouldExtractMateria                = true          --should it Extract Materia
+Retainers = Config.Get("Pause for retainers?")
+ShouldGrandCompanyTurnIn = Config.Get("Dump extra gear at GC?")         --should it do Turn ins at the GC (requires Deliveroo)
+    InventorySlotsLeft              = 5             --how much inventory space before turning in
+
+ReturnOnDeath = Config.Get("Return on death?")
+
+Echo = Config.Get("Echo logs")
+CompanionScriptMode                 = false         --Set to true if you are using the fate script with a companion script (such as the Atma Farmer)
+
+-- Get user-configured plugin
+local dodgeConfig = Config.Get("Dodging Plugin")  -- Options: Any / BossModReborn / BossMod / None
+
+-- Resolve "any" or specific plugin if available
+if dodgeConfig == "Any" then
+    if HasPlugin("BossModReborn") then
+        DodgingPlugin = "BMR"
+    elseif HasPlugin("BossMod") then
+        DodgingPlugin = "VBM"
+    else
+        DodgingPlugin = "None"
+    end
+elseif dodgeConfig == "BossModReborn" and HasPlugin("BossModReborn") then
+    DodgingPlugin = "BMR"
+elseif dodgeConfig == "BossMod" and HasPlugin("BossMod") then
+    DodgingPlugin = "VBM"
+else
+    DodgingPlugin = "None"
+end
+
+-- Override if RotationPlugin already uses a dodging plugin
+if RotationPlugin == "BMR" then
+    DodgingPlugin = "BMR"
+elseif RotationPlugin == "VBM" then
+    DodgingPlugin = "VBM"
+end
+
+-- Final warning if no dodging plugin is active
+if DodgingPlugin == "None" then
+    yield("/echo [FATE] Warning: 您没有配置 AI 躲避插件，因此您的角色将站在怪物攻击中。请安装 BossMod 或 BossMod Reborn")
+end
+
+if Retainers and not HasPlugin("AutoRetainer") then
+    Retainers = false
+    yield("/echo [FATE] Warning: 您已启用处理雇员的功能，但未安装 AutoRetainer。")
+end
+
+if ShouldGrandCompanyTurnIn and not HasPlugin("Deliveroo") then
+    ShouldGrandCompanyTurnIn = false
+    yield("/echo [FATE] Warning: 您已启用自动上交军票的功能，但尚未安装 Deliveroo")
+end
+
+if not CompanionScriptMode then
+    yield("/at y")
+end
+
 StopScript = false
 DidFate = false
 GemAnnouncementLock = false
@@ -2910,27 +3226,30 @@ SetMaxDistance()
 
 SelectedZone = SelectNextZone()
 if SelectedZone.zoneName ~= "" and Echo == "All" then
-    yield("/echo [FATE]前往 "..SelectedZone.zoneName)
+    yield("/echo [FATE] 前往 "..SelectedZone.zoneName)
 end
 Dalamud.Log("[FATE] Farming Start for "..SelectedZone.zoneName)
 
-for _, shop in ipairs(BicolorExchangeData) do
-    for _, item in ipairs(shop.shopItems) do
-        if item.itemName == ItemToPurchase then
-            SelectedBicolorExchangeData = {
-                shopKeepName = shop.shopKeepName,
-                zoneId = shop.zoneId,
-                aetheryteName = shop.aetheryteName,
-                miniAethernet = shop.miniAethernet,
-                position = shop.position,
-                item = item
-            }
+
+if ShouldExchangeBicolorGemstones ~= false then
+    for _, shop in ipairs(BicolorExchangeData) do
+        for _, item in ipairs(shop.shopItems) do
+            if item.itemName == ItemToPurchase then
+                SelectedBicolorExchangeData = {
+                    shopKeepName = shop.shopKeepName,
+                    zoneId = shop.zoneId,
+                    aetheryteName = shop.aetheryteName,
+                    miniAethernet = shop.miniAethernet,
+                    position = shop.position,
+                    item = item
+                }
+            end
         end
     end
-end
-if SelectedBicolorExchangeData == nil then
-    yield("/echo [FATE] 无法识别："..ItemToPurchase..". 请确保它在兑换表中！")
-    StopScript = true
+    if SelectedBicolorExchangeData == nil then
+        yield("/echo [FATE] 无法识别： "..ItemToPurchase.."， 请确保它在兑换表中！")
+        StopScript = true
+    end
 end
 
 State = CharacterState.ready
@@ -2940,13 +3259,13 @@ if InActiveFate() then
 end
 
 if ShouldSummonChocobo and GetBuddyTimeRemaining() > 0 then
-    yield('/cac '..ChocoboStance..'')
+    yield('/cac "'..ChocoboStance..' stance"')
 end
 
 while not StopScript do
     local nearestFate = Fates.GetNearestFate()
     if not IPC.vnavmesh.IsReady() then
-        yield("/echo [FATE] 正在等待构建路线")
+        yield("/echo [FATE] Waiting for vnavmesh to build...")
         Dalamud.Log("[FATE] Waiting for vnavmesh to build...")
         repeat
             yield("/wait 1")
