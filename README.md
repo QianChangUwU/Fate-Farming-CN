@@ -6,7 +6,7 @@
 # Fate-Farming-CN
 | |
 |--|
-|仓库链接|
+|Fate Farming 主脚本导入链接|
 |https://github.com/QianChangUwU/Fate-Farming-CN/blob/main/Fate_Farming_CN.lua|
 
 | |
