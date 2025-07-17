@@ -32,8 +32,7 @@ Fate Farming的部分功能：
 ## 新建脚本 (SND2)
 ![SND Basics](Settings/SND.png)
 
-### 脚本设置
-## **※一定要看※**
+## 脚本设置 **※一定要看※**
 ![SND Basics](Settings/Setting.png)
 
 ## 注意，一定要将飞行操作类型改成以下类型
