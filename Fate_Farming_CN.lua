@@ -1351,7 +1351,7 @@ end
 function AcceptNPCFateOrRejectOtherYesno()
     if Addons.GetAddon("SelectYesno").Ready then
         local dialogBox = GetNodeText("SelectYesno", 1, 2)
-        if type(dialogBox) == "string" and dialogBox:find("这个FATE的推荐等级是") then
+        if type(dialogBox) == "string" and dialogBox:find("危命任务的推荐等级") then
             yield("/callback SelectYesno true 0") --accept fate
         else
             yield("/callback SelectYesno true 1") --decline all other boxes
