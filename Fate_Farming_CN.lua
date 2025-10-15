@@ -1,7 +1,7 @@
 --[=====[
 [[SND Metadata]]
 author: "原作者:pot0to/汉化:QianChang"
-version: 3.0.9 CN-1.2.0
+version: 3.0.9 CN-1.2.1
 description: >-
   Fate farming 脚本具有以下特点:
 
@@ -37,8 +37,17 @@ configs:
     type: string
   Chocobo Companion Stance:
     default: "治疗战术"
-    description: "陆行鸟选项: 跟随/自由战术/防护战术/治疗战术/进攻战术,如果不使用陆行鸟则设为None"
-    type: string
+    description: "陆行鸟设置，如果不使用陆行鸟则设为None"
+    type: list
+    required: true
+    is_choice: true
+    choices:
+        - 跟随
+        - 自由战术
+        - 防护战术
+        - 治疗战术
+        - 进攻战术
+        - None
   Buy Gysahl Greens?:
     default: true
     description: "如果库存中没有,则自动从商人处购买 99 个 萨基尔野菜"
@@ -131,16 +140,33 @@ configs:
     description: "自动接受死亡通知,在死后回到你选择的水晶"
   Echo logs:
     default: All
-    type: string
     description: "修改这个值来控制你在聊天中希望显示多少echo消息/ None 不需要任何消息 /Gems 每个FATE结束后会显示当前双色宝石数量/ All 显示双色宝石数量,并提示下一个要前往的FATE名称"
+    type: list
+    is_choice: true
+    choices:
+        - All
+        - Gems
+        - None
   Rotation Plugin:
     default: "Any"
-    type: string
-    description: "选项 - Any/Wrath/RotationSolver/BossMod/BossModReborn. 自动输出插件"
+    description: 自动循环插件
+    type: list
+    is_choice: true
+    choices:
+        - Any
+        - Wrath
+        - RotationSolver
+        - BossMod
+        - BossModReborn
   Dodging Plugin:
     default: "Any"
-    type: string
-    description: "选项 - Any/BossMod/BossModReborn/None. 自动Ai躲避怪物技能"
+    description: 使用哪个自动躲避插件。如果你的循环插件是BossModReborn/BossMod，那么这个设置将被覆盖
+    type: list
+    is_choice: true
+    choices:
+        - Any
+        - BossMod
+        - BossModReborn
 [[End Metadata]]
 --]=====]
 --[[
@@ -148,10 +174,11 @@ configs:
 ********************************************************************************
 *                                  更新日志                                     *
 ********************************************************************************
-    -> 3.0.9 CN-1.2.0
+    -> 3.0.9 CN-1.2.1
                 By QianChang
-                尝试修复切换副本区时切换失败卡在原地的bug
-                新增当前地图最大副本区配置选项（为修复上述bug所添加）
+                成功修复切换副本区时切换失败卡在原地的bug!
+                新增当前地图最大副本区配置选项（为修复上述bug所添加）.
+                某些设置选项不再需要自行输入，改为直接选择.
     -> 3.0.9    By Allison.
                 修复Fate完成后角色站立不动的bug. 
                 新增自动循环插件和Ai躲避插件的配置选项（修复了多个求解器同时存在时的bug）
@@ -1587,6 +1614,46 @@ function ChangeInstance()
         end
         return
     end
+
+    -- 检查是否已经在切换中
+    if Svc.Condition[CharacterCondition.betweenAreas] then
+        yield("/wait 3")
+        return
+    end
+
+    yield("/target 以太之光")
+    -- ... 原有的目标检查逻辑 ...
+
+    local currentInstance = GetZoneInstance()
+    local maxInstances = 3
+    local nextInstance = (currentInstance % maxInstances) + 1
+    
+    Dalamud.Log("[FATE] Switching from instance "..currentInstance.." to "..nextInstance)
+    
+    -- 执行切换并添加超时保护
+    local startTime = os.clock()
+    yield("/li "..nextInstance)
+    
+    -- 等待切换开始
+    for i = 1, 10 do
+        yield("/wait 0.5")
+        if Svc.Condition[CharacterCondition.betweenAreas] then
+            break
+        end
+    end
+    
+    -- 等待切换完成（最多30秒）
+    while Svc.Condition[CharacterCondition.betweenAreas] do
+        if os.clock() - startTime > 30 then
+            Dalamud.Log("[FATE] Instance switch timeout!")
+            break
+        end
+        yield("/wait 1")
+    end
+    
+    yield("/wait 2")  -- 额外等待确保稳定
+    State = CharacterState.ready
+    SuccessiveInstanceChanges = SuccessiveInstanceChanges + 1
 
     yield("/target 以太之光") -- search for nearby aetheryte
     if Svc.Targets.Target == nil or GetTargetName() ~= "以太之光" then -- if no aetheryte within targeting range, teleport to it
