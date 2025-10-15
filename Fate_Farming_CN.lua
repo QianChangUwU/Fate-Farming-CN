@@ -1,7 +1,7 @@
 --[=====[
 [[SND Metadata]]
 author: "原作者:pot0to/汉化:QianChang"
-version: 3.0.9 CN-1.11
+version: 3.0.9 CN-1.2.0
 description: >-
   Fate farming 脚本具有以下特点:
 
@@ -102,6 +102,13 @@ configs:
     default: true
     type: boolean
     description: "当前副本区没有合适的Fate时,是否更换副本区"
+  MaxInstances:
+    default: 3
+    type: int
+    min: 0
+    max: 6
+    required: true
+    description: "当前地图有多少个副本区"
   Exchange bicolor gemstones for:
     default: 图拉尔双色宝石的收据
     type: string
@@ -141,7 +148,10 @@ configs:
 ********************************************************************************
 *                                  更新日志                                     *
 ********************************************************************************
-
+    -> 3.0.9 CN-1.2.0
+                By QianChang
+                尝试修复切换副本区时切换失败卡在原地的bug
+                新增当前地图最大副本区配置选项（为修复上述bug所添加）
     -> 3.0.9    By Allison.
                 修复Fate完成后角色站立不动的bug. 
                 新增自动循环插件和Ai躲避插件的配置选项（修复了多个求解器同时存在时的bug）
@@ -931,8 +941,8 @@ FatesData = {
             },
             fatesWithContinuations =
             {
-                { fateName="水城噩梦", continuationIsBoss=ture },
-                { fateName="亩鼠米卡：盛装巡游开始", continuationIsBoss=ture }
+                { fateName="水城噩梦", continuationIsBoss=true },
+                { fateName="亩鼠米卡：盛装巡游开始", continuationIsBoss=true }
             },
             specialFates =
             {
@@ -967,7 +977,7 @@ function GetBuddyTimeRemaining()
 end
 
 function SetMapFlag(zoneId, position)
-    Dalamud.Log("[FATE] Setting map flag to zone #"..zoneId..", (X: "..position.X..", "..position.Z.." )")
+    Dalamud.Log("[FATE] 设置旗帜 #"..zoneId..", (X: "..position.X..", "..position.Z.." )")
     Instances.Map.Flag:SetFlagMapMarker(zoneId, position.X, position.Z)
 end
 
@@ -1174,7 +1184,7 @@ function SelectNextZone()
 end
 
 function BuildFateTable(fateObj)
-    Dalamud.Log("[FATE] Enter->BuildFateTable")
+    Dalamud.Log("[FATE] 输入->构建Fata清单")
     local fateTable = {
         fateObject = fateObj,
         fateId = fateObj.Id,
@@ -1219,10 +1229,10 @@ end
 ]]
 function SelectNextFateHelper(tempFate, nextFate)
     if nextFate == nil then
-        Dalamud.Log("[FATE] nextFate is nil")
+        Dalamud.Log("[FATE] 下一个Fate为空")
         return tempFate
     elseif BonusFatesOnly then
-        Dalamud.Log("[FATE] only doing bonus fates")
+        Dalamud.Log("[FATE] 仅做额外奖励Fate")
         --Check if WaitForBonusIfBonusBuff is true, and have eithe buff, then set BonusFatesOnlyTemp to true
         if not tempFate.isBonusFate and nextFate ~= nil and nextFate.isBonusFate then
             return nextFate
@@ -1235,47 +1245,47 @@ function SelectNextFateHelper(tempFate, nextFate)
     end
 
     if tempFate.timeLeft < MinTimeLeftToIgnoreFate or tempFate.fateObject.Progress > CompletionToIgnoreFate then
-        Dalamud.Log("[FATE] Ignoring fate #"..tempFate.fateId.." due to insufficient time or high completion.")
+        Dalamud.Log("[FATE] 忽略Fate #"..tempFate.fateId.." 由于时间不足或完成度较高.")
         return nextFate
     elseif nextFate == nil then
-        Dalamud.Log("[FATE] Selecting #"..tempFate.fateId.." because no other options so far.")
+        Dalamud.Log("[FATE] 选择Fate #"..tempFate.fateId.." 因为到目前为止没有其他选项.")
         return tempFate
     elseif nextFate.timeLeft < MinTimeLeftToIgnoreFate or nextFate.fateObject.Progress > CompletionToIgnoreFate then
-        Dalamud.Log("[FATE] Ignoring fate #"..nextFate.fateId.." due to insufficient time or high completion.")
+        Dalamud.Log("[FATE] 忽略Fate #"..nextFate.fateId.." 由于时间不足或完成度较高.")
         return tempFate
     end
 
     -- Evaluate based on priority (Loop through list return first non-equal priority)
     for _, criteria in ipairs(FatePriority) do
         if criteria == "Progress" then
-            Dalamud.Log("[FATE] Comparing progress: "..tempFate.fateObject.Progress.." vs "..nextFate.fateObject.Progress)
+            Dalamud.Log("[FATE] 进度对比: "..tempFate.fateObject.Progress.." vs "..nextFate.fateObject.Progress)
             if tempFate.fateObject.Progress > nextFate.fateObject.Progress then return tempFate end
             if tempFate.fateObject.Progress < nextFate.fateObject.Progress then return nextFate end
         elseif criteria == "Bonus" then
-            Dalamud.Log("[FATE] Checking bonus status: "..tostring(tempFate.isBonusFate).." vs "..tostring(nextFate.isBonusFate))
+            Dalamud.Log("[FATE] 检测是否存在额外奖励: "..tostring(tempFate.isBonusFate).." vs "..tostring(nextFate.isBonusFate))
             if tempFate.isBonusFate and not nextFate.isBonusFate then return tempFate end
             if nextFate.isBonusFate and not tempFate.isBonusFate then return nextFate end
         elseif criteria == "TimeLeft" then
-            Dalamud.Log("[FATE] Comparing time left: "..tempFate.timeLeft.." vs "..nextFate.timeLeft)
+            Dalamud.Log("[FATE] 剩余时间对比: "..tempFate.timeLeft.." vs "..nextFate.timeLeft)
             if tempFate.timeLeft > nextFate.timeLeft then return tempFate end
             if tempFate.timeLeft < nextFate.timeLeft then return nextFate end
         elseif criteria == "Distance" then
             local tempDist = GetDistanceToPoint(tempFate.position)
             local nextDist = GetDistanceToPoint(nextFate.position)
-            Dalamud.Log("[FATE] Comparing distance: "..tempDist.." vs "..nextDist)
+            Dalamud.Log("[FATE] 距离对比: "..tempDist.." vs "..nextDist)
             if tempDist < nextDist then return tempFate end
             if tempDist > nextDist then return nextFate end
         elseif criteria == "DistanceTeleport" then
             local tempDist = GetDistanceToPointWithAetheryteTravel(tempFate.position)
             local nextDist = GetDistanceToPointWithAetheryteTravel(nextFate.position)
-            Dalamud.Log("[FATE] Comparing distance: "..tempDist.." vs "..nextDist)
+            Dalamud.Log("[FATE] 距离对比: "..tempDist.." vs "..nextDist)
             if tempDist < nextDist then return tempFate end
             if tempDist > nextDist then return nextFate end
         end
     end
 
     -- Fallback: Select fate with the lower ID
-    Dalamud.Log("[FATE] Selecting lower ID fate: "..tempFate.fateId.." vs "..nextFate.fateId)
+    Dalamud.Log("[FATE] 选择ID较低的Fate: "..tempFate.fateId.." vs "..nextFate.fateId)
     return (tempFate.fateId < nextFate.fateId) and tempFate or nextFate
 end
 
@@ -1566,6 +1576,7 @@ function ChangeInstance()
             local shouldWaitForBonusBuff = WaitIfBonusBuff and (HasStatusId(1288) or HasStatusId(1289))
             if WaitingForFateRewards == nil and not shouldWaitForBonusBuff then
                 StopScript = true
+                SuccessiveInstanceChanges = 0
             else
                 Dalamud.Log("[Fate Farming] Waiting for buff or fate rewards")
                 yield("/wait 3")
@@ -1628,10 +1639,17 @@ function ChangeInstance()
         return
     end
 
-    Dalamud.Log("[FATE] Transferring to next instance")
-    local nextInstance = (GetZoneInstance() % 2) + 1
+    local currentInstance = GetZoneInstance()
+    if currentInstance == 0 then
+        Dalamud.Log("[FATE] 无法确定当前副本区ID 正在终止切换副本区.")
+        return
+    end
+
+    Dalamud.Log("[FATE] Transferring from instance "..currentInstance.." to instance "..nextInstance)
+    local nextInstance = (currentInstance % MaxInstances) + 1
     yield("/li "..nextInstance) -- start instance transfer
     yield("/wait 1") -- wait for instance transfer to register
+
     State = CharacterState.ready
     SuccessiveInstanceChanges = SuccessiveInstanceChanges + 1
     Dalamud.Log("[FATE] State Change: Ready")
@@ -3135,6 +3153,7 @@ MaxWait                             = 10            --Max number of seconds it s
                                                         --Actual wait time will be a randomly generated number between MinWait and MaxWait.
 DownTimeWaitAtNearestAetheryte      = false         --When waiting for fates to pop, should you fly to the nearest Aetheryte and wait there?
 EnableChangeInstance = Config.Get("Change instances if no FATEs?")
+MaxInstances = Config.Get("MaxInstances")
 WaitIfBonusBuff = true          --Don't change instances if you have the Twist of Fate bonus buff
 NumberOfInstances = 2
 ShouldExchangeBicolorGemstones = Config.Get("Exchange bicolor gemstones?")
