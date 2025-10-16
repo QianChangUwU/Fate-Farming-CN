@@ -1,7 +1,7 @@
 --[=====[
 [[SND Metadata]]
 author: "原作者:pot0to/汉化:QianChang"
-version: 3.0.9 CN-1.2.1
+version: 3.0.9 CN-1.2.2
 description: >-
   Fate farming 脚本具有以下特点:
 
@@ -158,6 +158,7 @@ configs:
         - RotationSolver
         - BossMod
         - BossModReborn
+        - AEassist
   Dodging Plugin:
     default: "Any"
     description: 使用哪个自动躲避插件。如果你的循环插件是BossModReborn/BossMod，那么这个设置将被覆盖
@@ -174,6 +175,9 @@ configs:
 ********************************************************************************
 *                                  更新日志                                     *
 ********************************************************************************
+    -> 3.0.9 CN-1.2.2
+                By QianChang
+                更新支持AEassist自动循环插件
     -> 3.0.9 CN-1.2.1
                 By QianChang
                 成功修复切换副本区时切换失败卡在原地的bug!
@@ -186,12 +190,6 @@ configs:
                 清理元数据并调整描述,使其更贴合脚本实际内容. 
                 小幅调整战斗相关距离判定逻辑,使其更符合FFXIV对技能可用范围的判定机制（忽略高度差）. 有望修复战斗中部分最大距离判定的问题. 
                 其他小型错误修复. 
-    -> 3.0.6    新增元数据支持
-    -> 3.0.5    修复自动修理功能
-    -> 3.0.4    移除冗余日志输出
-    -> 3.0.2    修复 HasPlugin 检查逻辑
-    -> 3.0.1    修复因拼写错误导致的崩溃问题
-    -> 3.0.0    适配 SND2 框架更新
 
 ********************************************************************************
 *                                    必要插件                                   *
@@ -2327,6 +2325,10 @@ function TurnOnCombatMods(rotationMode)
             yield("/vbm ar toggle "..RotationAoePreset)
         elseif RotationPlugin == "Wrath" then
             yield("/wrath auto on")
+        elseif RotationPlugin == "AEassist" then
+            yield("/aepull on")
+            yield("/aeTargetSelector on")
+            yield("/aeTargetSelector mode9")
         end
         
         if not AiDodgingOn then
@@ -2365,6 +2367,10 @@ function TurnOffCombatMods()
             yield("/bmrai setpresetname nil")
         elseif RotationPlugin == "Wrath" then
             yield("/wrath auto off")
+        elseif RotationPlugin == "AEassist" then
+            yield("/aepull off")
+            yield("/aeTargetSelector off")
+            yield("/aeTargetSelector mode6")
         end
 
         -- turn off BMR so you don't start following other mobs
