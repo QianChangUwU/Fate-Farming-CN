@@ -57,14 +57,14 @@ Fate Farming 的部分功能：
 
 ### 必要插件
 
-| 插件名                                  | 作用                  | 仓库                                                                                         |
-| --------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------- |
-| Something Need Doing [Expanded Edition] | 主插件                | https://puni.sh/api/repository/croizat                                                       |
-| VNavmesh                                | 部署路径和移动        | https://puni.sh/api/repository/veyn                                                          |
-| RotationSolver Reborn                   | 选中并攻击            | https://raw.githubusercontent.com/FFXIV-CombatReborn/CombatRebornRepo/main/pluginmaster.json |
-| TextAdvance                             | 与 Fate 内的 NPC 互动 | 默认仓库自带                                                                                 |
-| Teleporter                              | 传送到以太水晶        | 默认仓库自带                                                                                 |
-| Lifestream                              | 切换副本区            | https://raw.githubusercontent.com/NightmareXIV/MyDalamudPlugins/main/pluginmaster.json       |
+| 插件名                | 作用                  | 仓库                                                                                         |
+| --------------------- | --------------------- | -------------------------------------------------------------------------------------------- |
+| Something Need Doing  | 主插件                | https://puni.sh/api/repository/croizat                                                       |
+| VNavmesh              | 部署路径和移动        | https://puni.sh/api/repository/veyn                                                          |
+| RotationSolver Reborn | 选中并攻击            | https://raw.githubusercontent.com/FFXIV-CombatReborn/CombatRebornRepo/main/pluginmaster.json |
+| TextAdvance           | 与 Fate 内的 NPC 互动 | 默认仓库自带                                                                                 |
+| Teleporter            | 传送到以太水晶        | 默认仓库自带                                                                                 |
+| Lifestream            | 切换副本区            | https://raw.githubusercontent.com/NightmareXIV/MyDalamudPlugins/main/pluginmaster.json       |
 
 ### 可选插件
 
