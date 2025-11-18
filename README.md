@@ -9,11 +9,11 @@
 | Fate Farming 主脚本导入链接                                                   |
 | https://github.com/QianChangUwU/Fate-Farming-CN/blob/main/Fate_Farming_CN.lua |
 
-|                                                                                          |
-| ---------------------------------------------------------------------------------------- | ---------- |
-| 在 Fate Farming 原本的基础上做了部分调整以适配国服环境                                   |
-| 原作者库：https://github.com/pot0to/pot0to-SND-Scripts                                   | 已停止更新 |
-| 现维护库：https://github.com/baanderson40/SND_Scripts/blob/main/Fates/Fate%20Farming.lua | 持续维护中 |
+|                                                                                                       |
+| ----------------------------------------------------------------------------------------------------- |
+| 在 Fate Farming 原本的基础上做了部分调整以适配国服环境                                                |
+| 已停止更新---原作者库：https://github.com/pot0to/pot0to-SND-Scripts                                   |
+| 持续维护中---现维护库：https://github.com/baanderson40/SND_Scripts/blob/main/Fates/Fate%20Farming.lua |
 
 Fate Farming 的部分功能：
 
