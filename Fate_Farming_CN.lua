@@ -3,9 +3,9 @@
 translator:QianChang || author: baanderson40 || orginially pot0to
 version: 3.1.5 CN-1.3.0-Beta
 description: |
-  通过 https://ko-fi.com/baanderson40 支持原作者
-  通过 https://afdian.com/a/QianChang 支持汉化工作
-  Fate farming 脚本具有以下特点:
+  "通过 https://ko-fi.com/baanderson40 支持原作者"
+  "通过 https://afdian.com/a/QianChang 支持汉化工作"
+  "Fate farming 脚本具有以下特点:"
   - "当您的宝石快满时,可以自动购买 双色宝石收据（7.0和6.0的）"
   - "Fate选择的优先级系统:距离/是否可以传送>进度>剩余时间>是否有加成"
   - "当 迷失者/迷失少女 在 Fate 期间出现时,会优先考虑它们"
@@ -21,12 +21,12 @@ plugin_dependencies:
 - TextAdvance
 configs:
   Rotation Plugin:
-    description: 自动循环插件
+    description: "自动循环插件"
     default: "Any"
     is_choice: true
     choices: ["Any", "Wrath", "RotationSolver","BossMod", "BossModReborn"]
   Dodging Plugin:
-    description: 使用哪个自动躲避插件。如果你的循环插件是BossModReborn/BossMod，那么这个设置将被覆盖
+    description: "使用哪个自动躲避插件。如果你的循环插件是BossModReborn/BossMod，那么这个设置将被覆盖"
     default: "Any"
     is_choice: true
     choices: ["Any", "BossMod", "BossModReborn", "None"]
@@ -34,16 +34,16 @@ configs:
     description: "--- BMR/VBM 特定设置，如果你使用它们作为你的自动循环插件 ---"
     default: false
   Single Target Rotation:
-    description: 带有单一策略的预设名称（适用于迷失者）。请关闭此预设的自动锁定目标功能
+    description: "带有单一策略的预设名称（适用于迷失者）。请关闭此预设的自动锁定目标功能"
     default: ""
   AoE Rotation:
-    description: 带有范围伤害和Buff的预设。
+    description: "带有范围伤害和Buff的预设。"
     default: ""
   Hold Buff Rotation:
-    description: 预设在进度达到选择的百分比时保持2分钟的爆发
+    description: "预设在进度达到选择的百分比时保持2分钟的爆发"
     default: ""
   Percentage to Hold Buff:
-    description: 理想情况下，当你希望充分利用你的buff效果时，如果进度太快，高于70%会浪费几秒钟的增益。
+    description: "理想情况下，当你希望充分利用你的buff效果时，如果进度太快，高于70%会浪费几秒钟的增益。"
     default: 65
   Food:
     description: "如果不想吃任何食物就留空. 如果想自动使用HQ食物就添加 <hq> 在食物后面,例如 xxx <hq>"
@@ -80,7 +80,7 @@ configs:
     description: "是否做收集Fate"
   Do only bonus FATEs?:
     default: false
-    "如果为true,则只做奖励提升FATE,忽略其他所有FATE"
+    description: "如果为true,则只做奖励提升FATE,忽略其他所有FATE"
   Forlorns:
     description: Forlorns to attack.
     default: "All"
@@ -89,9 +89,9 @@ configs:
     description: "是否攻击迷失者和迷失少女（不建议修改）"
   Change instances if no FATEs?:
     default: false
-    description: "当前副本区没有合适的Fate时,是否更换副本区"
+    description: "是否切换副本区"
   Exchange bicolor gemstones for:
-    description: 如果你不想花你的双色宝石，请选择"None"
+    description: "如果你不想花你的双色宝石，请选择None"
     default: "图拉尔双色宝石的收据"
     is_choice: true
     choices: ["None",
@@ -133,7 +133,7 @@ configs:
         "Ty'aitya Wingblade",
         "Ut'ohmu Siderite"]
   Chocobo Companion Stance:
-    description: 陆行鸟设置，如果不使用陆行鸟则设为None"
+    description: "陆行鸟设置，如果不使用陆行鸟则设为None"
     default: "治疗战术"
     is_choice: true
     choices: ["跟随", "自由战术", "防护战术", "治疗战术", "进攻战术", "None"]
@@ -158,7 +158,7 @@ configs:
     is_choice: true
     choices: ["All", "Gems", "None"]
   Companion Script Mode:
-    description: 是否使用附属脚本
+    description: "是否使用附属脚本"
     default: false
 [[End Metadata]]
 --]=====]
@@ -845,7 +845,7 @@ FatesData = {
             },
             fatesWithContinuations = {},
             specialFates = {
-                "	侵略兵器召回指令：破坏侵略兵器希" -- 希（特殊FATE）
+                "    侵略兵器召回指令：破坏侵略兵器希" -- 希（特殊FATE）
             },
             blacklistedFates= {}
         }
