@@ -9,10 +9,11 @@
 | Fate Farming 主脚本导入链接                                                   |
 | https://github.com/QianChangUwU/Fate-Farming-CN/blob/main/Fate_Farming_CN.lua |
 
-|                                                        |
-| ------------------------------------------------------ |
-| 在 Fate Farming 原本的基础上做了部分调整以适配国服环境 |
-| 原作者库：https://github.com/pot0to/pot0to-SND-Scripts |
+|                                                                                                       |
+| ----------------------------------------------------------------------------------------------------- |
+| 在 Fate Farming 原本的基础上做了部分调整以适配国服环境                                                |
+| 已停止更新---原作者库：https://github.com/pot0to/pot0to-SND-Scripts                                   |
+| 持续维护中---现维护库：https://github.com/baanderson40/SND_Scripts/blob/main/Fates/Fate%20Farming.lua |
 
 Fate Farming 的部分功能：
 
@@ -57,14 +58,14 @@ Fate Farming 的部分功能：
 
 ### 必要插件
 
-| 插件名                | 作用                  | 仓库                                                                                         |
-| --------------------- | --------------------- | -------------------------------------------------------------------------------------------- |
-| Something Need Doing  | 主插件                | https://puni.sh/api/repository/croizat                                                       |
-| VNavmesh              | 部署路径和移动        | https://puni.sh/api/repository/veyn                                                          |
-| RotationSolver Reborn | 选中并攻击            | https://raw.githubusercontent.com/FFXIV-CombatReborn/CombatRebornRepo/main/pluginmaster.json |
-| TextAdvance           | 与 Fate 内的 NPC 互动 | 默认仓库自带                                                                                 |
-| Teleporter            | 传送到以太水晶        | 默认仓库自带                                                                                 |
-| Lifestream            | 切换副本区            | https://raw.githubusercontent.com/NightmareXIV/MyDalamudPlugins/main/pluginmaster.json       |
+| 插件名                                  | 作用                  | 仓库                                                                                         |
+| --------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------- |
+| Something Need Doing [Expanded Edition] | 主插件                | https://puni.sh/api/repository/croizat                                                       |
+| VNavmesh                                | 部署路径和移动        | https://puni.sh/api/repository/veyn                                                          |
+| RotationSolver Reborn                   | 选中并攻击            | https://raw.githubusercontent.com/FFXIV-CombatReborn/CombatRebornRepo/main/pluginmaster.json |
+| TextAdvance                             | 与 Fate 内的 NPC 互动 | 默认仓库自带                                                                                 |
+| Teleporter                              | 传送到以太水晶        | 默认仓库自带                                                                                 |
+| Lifestream                              | 切换副本区            | https://raw.githubusercontent.com/NightmareXIV/MyDalamudPlugins/main/pluginmaster.json       |
 
 ### 可选插件
 
