@@ -1,15 +1,16 @@
 --[=====[
 [[SND Metadata]]
-author: 'pot0to || Updated by: Minnu'
+author: 'pot0to || Updated by: Minnu || translator:QianChang'
 version: 2.0.1
-description: Multi Zone Farming - Companion script for Fate Farming
+description: "Multi Zone Farming(多区域Fate Farming) - Fate Farming 配套脚本"
 plugin_dependencies:
 - Lifestream
 - vnavmesh
 - TextAdvance
 configs:
   FateMacro:
-    description: Name of the primary fate macro script.
+    description: "Fate Farming脚本在SND中的名字(如果你用GitHub导入，默认为'Fate Farming')"
+    default: Fate Farming
 
 [[End Metadata]]
 --]=====]
