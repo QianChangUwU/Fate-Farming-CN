@@ -1,37 +1,48 @@
+--[=====[
+[[SND Metadata]]
+author: 'pot0to || Updated by: Minnu'
+version: 2.0.1
+description: Multi Zone Farming - Companion script for Fate Farming
+plugin_dependencies:
+- Lifestream
+- vnavmesh
+- TextAdvance
+configs:
+  FateMacro:
+    description: Name of the primary fate macro script.
+
+[[End Metadata]]
+--]=====]
+
 --[[
 
 ********************************************************************************
-*                                多区域自动化Fate                              *
-*                                   版本  1.0.2  CN-1.02                       *
+*                             Multi Zone Farming                               *
+*                                Version 2.0.0                                 *
 ********************************************************************************
 
-多区域自动化Fate旨在与Fate_Farming_CN.lua配合使用。
-该脚本会按照区域列表依次刷Fate，直到当前区域没有符合条件的Fate为止，
-然后传送至下一个区域并重新启动刷Fate脚本。
+Multi zone farming script meant to be used with `Fate Farming.lua`. This will go
+down the list of zones and farm fates until there are no eligible fates left,
+then teleport to the next zone and restart the fate farming script.
 
-原作者: pot0to (https://ko-fi.com/pot0to)
-汉化: QianChang 联系方式:2318933089(QQ) 主页(https://github.com/QianChangUwU)
-        
-    -> 1.0.2  添加时间检测
-        添加了对死亡和意外战斗的检测
+Created by: pot0to (https://ko-fi.com/pot0to)
+Updated by: Minnu
+
+    -> 2.0.1    Switching from Teleporter to Lifestream
+    -> 2.0.0    Updated for Latest SnD
+    -> 1.0.1    Added check for death and unexpected combat
+                First release
 
 --#region Settings
 
 --[[
 ********************************************************************************
-*                                   设置                                       *
+*                                   Settings                                   *
 ********************************************************************************
 ]]
 
-FateMacro = "Fate Farming"      -- 你的SND主脚本名称
-AfterScriptStopTP = "部队房屋"  -- 脚本达到设置的时间后回哪儿
-MaxRunTimeInHours = 6           -- 设置脚本运行的最大时间（支持小数，如1.5表示1小时30分钟）
-NotifyBeforeStopMinutes = 5     -- 在停止前多少分钟发出提醒
+FateMacro   = Config.Get("FateMacro")
 
-ScriptStartTime = os.clock()  -- 记录脚本开始运行的时间（不用动）
-LastNotificationTime = 0      -- 记录上次通知时间
-TimeLimitReached = false      -- 标记是否已达到时间限制
--- 区域列表
 ZonesToFarm = {
     --7.0地图
     { zoneName = "奥阔帕恰山", zoneId = 1187 },
@@ -58,99 +69,85 @@ ZonesToFarm = {
 --    { zoneName = "伊尔美格", zoneId = 816 },
 --    { zoneName = "拉凯提卡大森林", zoneId = 817 },
 --    { zoneName = "黑风海", zoneId = 818 },
-
-
 --#endregion Settings
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 --[[
-********************************************************************************
-*           这里是代码：除非你知道你在做什么不然不要动它                        *
-********************************************************************************
+**************************************************************
+*  Code: Don't touch this unless you know what you're doing  *
+**************************************************************
 ]]
 
-
 CharacterCondition = {
-    casting=27,
-    betweenAreas=45,
-    dead=2,
-    inCombat=26
+    dead         = 2,
+    inCombat     = 26,
+    casting      = 27,
+    betweenAreas = 45
 }
 
+function OnChatMessage()
+    local message = TriggerData.message
+    local patternToMatch = "%[Fate%] Loop Ended !!"
+
+    if message and message:find(patternToMatch) then
+        Dalamud.Log("[MultiZone] OnChatMessage triggered")
+        FateMacroRunning = false
+        Dalamud.Log("[MultiZone] FateMacro has stopped")
+    end
+end
+
 function TeleportTo(aetheryteName)
-    yield("/tp "..aetheryteName)
-    yield("/wait 1") -- wait for casting to begin
-    while GetCharacterCondition(CharacterCondition.casting) do
+    yield("/li " .. aetheryteName)
+    yield("/wait 1")
+    while Svc.Condition[CharacterCondition.casting] do
         yield("/wait 1")
     end
-    yield("/wait 1") -- wait for that microsecond in between the cast finishing and the transition beginning
-    while GetCharacterCondition(CharacterCondition.betweenAreas) do
+    yield("/wait 1")
+    while Svc.Condition[CharacterCondition.betweenAreas] do
         yield("/wait 1")
     end
     yield("/wait 1")
 end
 
-function CheckTimeLimit()
-    local currentRunTimeInHours = (os.clock() - ScriptStartTime) / 3600
-    local remainingMinutes = (MaxRunTimeInHours - currentRunTimeInHours) * 60
-    
-    -- 提前通知
-    if remainingMinutes <= NotifyBeforeStopMinutes and remainingMinutes > 0 and 
-       (os.clock() - LastNotificationTime) > 60 then
-        yield("/echo [提醒] 脚本将在约 "..math.floor(remainingMinutes).." 分钟后停止运行！")
-        LastNotificationTime = os.clock()
+function GetAetheryteName(ZoneID)
+    local territoryData = Excel.GetRow("TerritoryType", ZoneID)
+
+    if territoryData and territoryData.Aetheryte and territoryData.Aetheryte.PlaceName then
+        return tostring(territoryData.Aetheryte.PlaceName.Name)
     end
-    
-    -- 达到时间限制
-    if currentRunTimeInHours >= MaxRunTimeInHours and not TimeLimitReached then
-        TimeLimitReached = true
-        yield("/echo [时间到] 脚本已运行 "..MaxRunTimeInHours.." 小时，正在停止...")
-        yield("/snd stop "..FateMacro)
-        yield("/wait 3")
-        TeleportTo(AfterScriptStopTP)
-        yield("/echo [完成] 脚本已安全停止并传送至 "..AfterScriptStopTP)
-        return true
-    end
-    return false
 end
 
 FarmingZoneIndex = 1
-OldBicolorGemCount = GetItemCount(26807)
+OldBicolorGemCount = Inventory.GetItemCount(26807)
 
 while true do
-    -- 检查时间限制
-    if CheckTimeLimit() then
-        break  -- 退出主循环
-    end
-    
-    -- 原有逻辑
-    if not IsPlayerOccupied() and not IsMacroRunningOrQueued(FateMacro) then
-        if GetCharacterCondition(2) or GetCharacterCondition(26) or GetZoneID() == ZonesToFarm[FarmingZoneIndex].zoneId then
-            LogInfo("[MultiZone] Starting FateMacro")
-            yield("/snd run "..FateMacro)
-            repeat
+    if not Player.IsBusy and not FateMacroRunning then
+        if Svc.Condition[CharacterCondition.dead] or Svc.Condition[CharacterCondition.inCombat] or Svc.ClientState.TerritoryType == ZonesToFarm[FarmingZoneIndex].zoneId then
+            Dalamud.Log("[MultiZone] Starting FateMacro")
+            yield("/snd run " .. FateMacro)
+            FateMacroRunning = true
+
+            while FateMacroRunning do
                 yield("/wait 3")
-                if CheckTimeLimit() then
-                    break  -- 如果达到时间限制，提前退出
-                end
-            until not IsMacroRunningOrQueued(FateMacro)
-            
-            if TimeLimitReached then break end  -- 如果已超时则完全退出
-            
-            LogInfo("[MultiZone] FateMacro has stopped")
-            NewBicolorGemCount = GetItemCount(26807)
+            end
+
+            Dalamud.Log("[MultiZone] FateMacro has stopped")
+            NewBicolorGemCount = Inventory.GetItemCount(26807)
+
             if NewBicolorGemCount == OldBicolorGemCount then
-                yield("/echo 当前双色宝石: "..NewBicolorGemCount)
                 FarmingZoneIndex = (FarmingZoneIndex % #ZonesToFarm) + 1
             else
                 OldBicolorGemCount = NewBicolorGemCount
             end
         else
-            LogInfo("[MultiZone] Teleporting to "..ZonesToFarm[FarmingZoneIndex].zoneName)
-            TeleportTo(GetAetheryteName(GetAetherytesInZone(ZonesToFarm[FarmingZoneIndex].zoneId)[0]))
+            Dalamud.Log("[MultiZone] Teleporting to " .. ZonesToFarm[FarmingZoneIndex].zoneName)
+            local aetheryteName = GetAetheryteName(ZonesToFarm[FarmingZoneIndex].zoneId)
+
+            if aetheryteName then
+                TeleportTo(aetheryteName)
+            end
         end
     end
     yield("/wait 1")
 end
---#endregion

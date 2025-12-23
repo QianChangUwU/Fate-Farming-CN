@@ -1,39 +1,62 @@
+--[=====[
+[[SND Metadata]]
+author: 'pot0to || Updated by: baanderson40'
+version: 2.0.1
+description: Zodiac Atma Farming - Companion script for Fate Farming
+plugin_dependencies:
+- Lifestream
+- vnavmesh
+- TextAdvance
+configs:
+  FateMacro:
+    description: Name of the primary fate macro script.
+    default: ""
+  NumberToFarm:
+    description: How many of each atma to farm?
+    default: 1
+
+[[End Metadata]]
+--]=====]
+
 --[[
 
 ********************************************************************************
-*                                自动化古武魂晶                                *
-*                                  版本  1.0.1  CN-1.00                        *
+*                             Zodiac Atma Farming                              *
+*                                Version 2.0.1                                 *
 ********************************************************************************
 
-古武魂晶刷取脚本，旨在与Fate_Farming_CN.lua配合使用。
-该脚本会按照古武魂晶刷取区域列表依次刷Fate，
-直到你的背包中拥有12个所需的古武魂晶为止，
-然后传送至下一个区域并重新启动刷Fate脚本。
+Atma farming script meant to be used with `Fate Farming.lua`. This will go down
+the list of atma farming zones and farm fates until you have 12 of the required
+atmas in your inventory, then teleport to the next zone and restart the fate
+farming script.
 
-原作者: pot0to (https://ko-fi.com/pot0to)
-汉化: QianChang 联系方式:2318933089(QQ) 主页(https://github.com/QianChangUwU)
-        
-    -> 1.0.0    首次发布
+Created by: pot0to (https://ko-fi.com/pot0to)
+Updated by: baanderson40 (https://ko-fi.com/baanderson40)
+
+    -> 2.0.1    Updated CharacterCondition
+    -> 2.0.0    Updated for Latest SnD
+    -> 1.0.1    Added check for death and unexpected combat
+                First release
 
 --#region Settings
 
 --[[
 ********************************************************************************
-*                                   设置                                       *
+*                                   Settings                                   *
 ********************************************************************************
 ]]
 
-FateMacro = "Fate Farming"      -- 主脚本SND名称
-NumberToFarm = 1                -- 每个地图刷多少个古武魂晶
+FateMacro = Config.Get("FateMacro")
+NumberToFarm = Config.Get("NumberToFarm")
 
 --#endregion Settings
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 --[[
-********************************************************************************
-*           这里是代码：除非你知道你在做什么不然不要动它                        *
-********************************************************************************
+**************************************************************
+*  Code: Don't touch this unless you know what you're doing  *
+**************************************************************
 ]]
 Atmas =
 {
@@ -50,44 +73,71 @@ Atmas =
     {zoneName = "黑衣森林北部林区", zoneId = 154, itemName = "人马之魂晶", itemId = 7860},
     {zoneName = "拉诺西亚外地", zoneId = 180, itemName = "狮子之魂晶", itemId = 7858, flying=false}
 }
-
 CharacterCondition = {
-    casting=27,
-    betweenAreas=45
+    casting = 27,
+    betweenAreas = 45
 }
+
+function OnChatMessage()
+    local message = TriggerData.message
+    local patternToMatch = "%[Fate%] Loop Ended !!"
+
+    if message and message:find(patternToMatch) then
+        Dalamud.Log("[Atma Farm] OnChatMessage triggered")
+        FateMacroRunning = false
+        Dalamud.Log("[Atma Farm] FateMacro has stopped")
+    end
+end
+
+function GetAetheryteName(ZoneID)
+    local territoryData = Excel.GetRow("TerritoryType", ZoneID)
+
+    if territoryData and territoryData.Aetheryte and territoryData.Aetheryte.PlaceName then
+        return tostring(territoryData.Aetheryte.PlaceName.Name)
+    end
+end
 
 function GetNextAtmaTable()
     for _, atmaTable in pairs(Atmas) do
-        if GetItemCount(atmaTable.itemId) < NumberToFarm then
+        if Inventory.GetItemCount(atmaTable.itemId) < NumberToFarm then
             return atmaTable
         end
     end
 end
 
 function TeleportTo(aetheryteName)
-    yield("/tp "..aetheryteName)
+    yield("/tp " .. aetheryteName)
     yield("/wait 1") -- wait for casting to begin
-    while GetCharacterCondition(CharacterCondition.casting) do
-        LogInfo("[FATE] Casting teleport...")
+    while Svc.Condition[CharacterCondition.casting] do
+        Dalamud.Log("[Atma Farm] Casting teleport...")
         yield("/wait 1")
     end
     yield("/wait 1") -- wait for that microsecond in between the cast finishing and the transition beginning
-    while GetCharacterCondition(CharacterCondition.betweenAreas) do
-        LogInfo("[FATE] Teleporting...")
+    while Svc.Condition[CharacterCondition.betweenAreas] do
+        Dalamud.Log("[Atma Farm] Teleporting...")
         yield("/wait 1")
     end
     yield("/wait 1")
 end
 
+yield("/at y")
 NextAtmaTable = GetNextAtmaTable()
 while NextAtmaTable ~= nil do
-    if not IsPlayerOccupied() and not IsMacroRunningOrQueued(FateMacro) then
-        if GetItemCount(NextAtmaTable.itemId) >= NumberToFarm then
+    if not Player.IsBusy and not FateMacroRunning then
+        Dalamud.Log("[Atma Farm] Starting FateMacro")
+        yield("/snd run " .. FateMacro)
+        FateMacroRunning = true
+
+        while FateMacroRunning do
+            yield("/wait 3")
+        end
+
+        if Inventory.GetItemCount(NextAtmaTable.itemId) >= NumberToFarm then
             NextAtmaTable = GetNextAtmaTable()
-        elseif not IsInZone(NextAtmaTable.zoneId) then
-            TeleportTo(GetAetheryteName(GetAetherytesInZone(NextAtmaTable.zoneId)[0]))
+        elseif not Svc.ClientState.LocalPlayer.TerritoryType == (NextAtmaTable.zoneId) then
+            TeleportTo(GetAetheryteName(NextAtmaTable.zoneId)[0])
         else
-            yield("/snd run "..FateMacro)
+            yield("/snd run " .. FateMacro)
         end
     end
     yield("/wait 1")
