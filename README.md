@@ -4,10 +4,12 @@
 
 # Fate-Farming-CN
 
-|                                                                               |
-| ----------------------------------------------------------------------------- |
-| Fate Farming 主脚本导入链接                                                   |
-| https://github.com/QianChangUwU/Fate-Farming-CN/blob/main/Fate_Farming_CN.lua |
+|                                                                                         |
+| --------------------------------------------------------------------------------------- |
+| Fate Farming 主脚本导入链接                                                             |
+| https://github.com/QianChangUwU/Fate-Farming-CN/blob/main/Fate_Farming_CN.lua           |
+| Multi_Zone_Farming DLC 脚本导入链接                                                     |
+| https://github.com/QianChangUwU/Fate-Farming-CN/blob/main/DLC/Multi_Zone_Farming_CN.lua |
 
 |                                                                                                       |
 | ----------------------------------------------------------------------------------------------------- |
