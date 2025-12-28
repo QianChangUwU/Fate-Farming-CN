@@ -30,28 +30,27 @@ jobs:
 
       # 2. 生成标签（使用环境变量和变量输出）
       - name: Generate unique tag
-        id: vars
         run: |
           export TZ="Asia/Shanghai"
-          TAG="Fate_Farming_3.1.5_CN-1.4.0"
-          echo "TAG=$TAG" >> $GITHUB_ENV
-          echo "CURRENT_DATE=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_ENV
+          # 建议在 TAG 结尾加上日期时间，否则 Cleanup 逻辑没有对象可以清理
+          TAG_NAME="Fate_Farming_3.1.5_CN-1.4.0_$(date +'%Y%m%d_%H%M%S')"
+          echo "TAG=$TAG_NAME" >> $GITHUB_ENV
+          echo "CURRENT_TIME=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          echo "DATE_STAMP=$(date +'%Y%m%d')" >> $GITHUB_ENV
 
       # 3. 清理旧 Release (使用 GitHub CLI，速度更快)
       - name: Cleanup old releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Checking for releases on or before ${{ env.CURRENT_DATE }}..."
-          # 获取所有 release 标签名并在本地筛选
-          gh release list --limit 100 | while read -r line; do
-            TAG_NAME=$(echo "$line" | awk '{print $1}')
-            # 提取标签中的日期部分 (假设格式包含 8 位数字)
-            RELEASE_DATE=$(echo "$TAG_NAME" | grep -oP '\d{8}' | head -n 1)
+          # 获取所有包含特定前缀的 Release
+          gh release list --limit 100 | grep "Fate_Farming" | while read -r line; do
+            OLD_TAG=$(echo "$line" | awk '{print $1}')
             
-            if [[ -n "$RELEASE_DATE" && "$RELEASE_DATE" -le "${{ env.CURRENT_DATE }}" ]]; then
-              echo "Deleting old release and tag: $TAG_NAME"
-              gh release delete "$TAG_NAME" --yes --cleanup-tag
+            # 只要不是当前正在生成的这个 TAG，就全部删除
+            if [[ "$OLD_TAG" != "${{ env.TAG }}" ]]; then
+              echo "Deleting old release: $OLD_TAG"
+              gh release delete "$OLD_TAG" --yes --cleanup-tag
             fi
           done
 
@@ -69,7 +68,5 @@ jobs:
           files: ${{ env.ZIP_NAME }}
           tag_name: ${{ env.TAG }}
           name: "自动构建 - ${{ env.TAG }}"
-          body: |
-            ## 构建信息
-            - **构建时间**: ${{ env.CURRENT_DATE }}
+          body: "构建时间：${{ env.CURRENT_TIME }}"
           generate_release_notes: false
