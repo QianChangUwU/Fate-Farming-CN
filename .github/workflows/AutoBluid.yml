@@ -33,9 +33,9 @@ jobs:
         id: vars
         run: |
           export TZ="Asia/Shanghai"
-          TAG="Fate_Farming_3.1.5_CN-1.4.0_$(date +'%Y%m%d_%H%M%S')"
+          TAG="Fate_Farming_3.1.5_CN-1.4.0_$(date +'%Y%m%d_%H%M')"
           echo "TAG=$TAG" >> $GITHUB_ENV
-          echo "CURRENT_DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+          echo "CURRENT_DATE=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_ENV
 
       # 3. 清理旧 Release (使用 GitHub CLI，速度更快)
       - name: Cleanup old releases
