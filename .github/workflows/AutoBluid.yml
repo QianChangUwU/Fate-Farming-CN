@@ -71,7 +71,5 @@ jobs:
           name: "自动构建 - ${{ env.TAG }}"
           body: |
             ## 构建信息
-            - **构建时间**: ${{ env.TAG }}
-            - **提交哈希**: `${{ github.sha }}`
-            - **自动生成说明**: 请在下方查看具体更改。
-          generate_release_notes: true
+            - **构建时间**: ${{ env.CURRENT_DATE }}
+          generate_release_notes: false
