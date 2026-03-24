@@ -2365,6 +2365,10 @@ function TurnOnCombatMods(rotationMode)
             IPC.BossMod.SetActive(RotationAoePreset)
         elseif RotationPlugin == "Wrath" then
             yield("/wrath auto on")
+        elseif RotationPlugin == "AEassist" then
+            yield("/aepull on")
+            yield("/aeTargetSelector on")
+            yield("/aeTargetSelector mode9")
         end
 
         if not AiDodgingOn then
@@ -2390,10 +2394,6 @@ function TurnOnCombatMods(rotationMode)
                 if RotationPlugin ~= "VBM" then
                     yield("/vbmai ForbidActions on") --This Disables VBM AI Auto-Target
                 end]]
-            elseif RotationPlugin == "AEassist" then
-                yield("/aepull on")
-                yield("/aeTargetSelector on")
-                yield("/aeTargetSelector mode9")
             end
             AiDodgingOn = true
         end
