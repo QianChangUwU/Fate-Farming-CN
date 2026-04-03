@@ -2369,6 +2369,8 @@ function TurnOnCombatMods(rotationMode)
             yield("/wrath auto on")
         elseif RotationPlugin == "AEAssist" then
             yield("/aeTargetSelector on")
+            yield("/aepull on")
+            yield("/aeTargetSelector mode9")
         end
 
         if not AiDodgingOn then
@@ -2416,8 +2418,6 @@ function TurnOffCombatMods()
             yield("/wrath auto off")
         elseif RotationPlugin == "AEAssist" then
             yield("/aeTargetSelector off")
-            yield("/aepull on")
-            yield("/aeTargetSelector mode9")
         end
     end
 
