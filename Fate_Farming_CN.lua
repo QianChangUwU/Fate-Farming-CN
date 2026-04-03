@@ -2368,7 +2368,6 @@ function TurnOnCombatMods(rotationMode)
         elseif RotationPlugin == "Wrath" then
             yield("/wrath auto on")
         elseif RotationPlugin == "AEAssist" then
-            yield("/aestop")
             yield("/aeTargetSelector on")
         end
 
@@ -2416,7 +2415,6 @@ function TurnOffCombatMods()
         elseif RotationPlugin == "Wrath" then
             yield("/wrath auto off")
         elseif RotationPlugin == "AEAssist" then
-            yield("/aestop")
             yield("/aeTargetSelector off")
             yield("/aepull on")
             yield("/aeTargetSelector mode9")
@@ -3331,7 +3329,7 @@ if configRotationPlugin == "any" then
         RotationPlugin = "AEAssist"
     else
         yield(
-                    "/echo [FATE] Warning: 没有安装自动循环插件，请自行安装WrathCombo, RotationSolver, BossMod Reborn, BossMod, AEAssist其中一个.")
+            "/echo [FATE] Warning: 没有安装自动循环插件，请自行安装WrathCombo, RotationSolver, BossMod Reborn, BossMod, AEAssist其中一个.")
         StopScript = true
     end
 elseif configRotationPlugin == "wrath" and HasPlugin("WrathCombo") then
