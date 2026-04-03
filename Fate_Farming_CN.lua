@@ -24,7 +24,7 @@ configs:
     description: "自动循环插件"
     default: "Any"
     is_choice: true
-    choices: ["Any", "Wrath", "RotationSolver","BossMod", "BossModReborn", "AEassist"]
+    choices: ["Any", "Wrath", "RotationSolver","BossMod", "BossModReborn", "AEAssist"]
   Dodging Plugin:
     description: "使用哪个自动躲避插件。如果你的循环插件是BossModReborn/BossMod，那么这个设置将被覆盖"
     default: "Any"
@@ -2367,11 +2367,9 @@ function TurnOnCombatMods(rotationMode)
             IPC.BossMod.SetActive(RotationAoePreset)
         elseif RotationPlugin == "Wrath" then
             yield("/wrath auto on")
-        elseif RotationPlugin == "AEassist" then
-            yield("/aepull on")
+        elseif RotationPlugin == "AEAssist" then
             yield("/aestop")
             yield("/aeTargetSelector on")
-            yield("/aeTargetSelector mode9")
         end
 
         if not AiDodgingOn then
@@ -2417,9 +2415,11 @@ function TurnOffCombatMods()
             IPC.BossMod.ClearActive()
         elseif RotationPlugin == "Wrath" then
             yield("/wrath auto off")
-        elseif RotationPlugin == "AEassist" then
+        elseif RotationPlugin == "AEAssist" then
             yield("/aestop")
             yield("/aeTargetSelector off")
+            yield("/aepull on")
+            yield("/aeTargetSelector mode9")
         end
     end
 
@@ -3327,9 +3327,11 @@ if configRotationPlugin == "any" then
         RotationPlugin = "BMR"
     elseif HasPlugin("BossMod") then
         RotationPlugin = "VBM"
-    elseif HasPlugin("AEassist") then
-        RotationPlugin = "AEassist"
+    elseif HasPlugin("AEAssistV3") then
+        RotationPlugin = "AEAssist"
     else
+        yield(
+                    "/echo [FATE] Warning: 没有安装自动循环插件，请自行安装WrathCombo, RotationSolver, BossMod Reborn, BossMod, AEAssist其中一个.")
         StopScript = true
     end
 elseif configRotationPlugin == "wrath" and HasPlugin("WrathCombo") then
@@ -3340,11 +3342,14 @@ elseif configRotationPlugin == "bossmodreborn" and HasPlugin("BossModReborn") th
     RotationPlugin = "BMR"
 elseif configRotationPlugin == "bossmod" and HasPlugin("BossMod") then
     RotationPlugin = "VBM"
-elseif configRotationPlugin == "AeAssist" and HasPlugin("AEassist") then
-    RotationPlugin = "AEassist"
+elseif configRotationPlugin == "aeassist" and HasPlugin("AEAssistV3") then
+    RotationPlugin = "AEAssist"
 else
+    yield(
+        "/echo [FATE] Warning: 没有安装自动循环插件，请自行安装WrathCombo, RotationSolver, BossMod Reborn, BossMod, AEAssist其中一个.")
     StopScript = true
 end
+
 RSRAoeType                 = "Full" --Options: Cleave/Full/Off
 
 -- For BMR/VBM/Wrath rotation plugins
