@@ -28,7 +28,7 @@ jobs:
       - name: Generate unique tag
         run: |
           export TZ="Asia/Shanghai"
-          TAG_NAME="Fate_Farming_3.1.5_CN-1.4.0_$(date +'%Y%m%d_%H%M%S')"
+          TAG_NAME="Fate_Farming_3.1.5_CN-1.4.1_$(date +'%Y%m%d_%H%M%S')"
           echo "TAG=$TAG_NAME" >> $GITHUB_ENV
           echo "CURRENT_TIME=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
           echo "DATE_STAMP=$(date +'%Y%m%d')" >> $GITHUB_ENV
@@ -40,19 +40,19 @@ jobs:
         run: |
           # 获取所有匹配的 Release，按创建时间排序，保留最新的 5 个
           echo "Current new tag: ${{ env.TAG }}"
-          
+
           # 获取所有 tag，排除当前新的，保留最新的 5 个
           ALL_TAGS=$(gh release list --limit 100 --json tagName,createdAt \
             --jq 'sort_by(.createdAt) | reverse | .[].tagName' | \
             grep "Fate_Farming" | \
             grep -v "${{ env.TAG }}")
-          
+
           # 保留最新的 5 个，删除其余的
           COUNT=0
           echo "$ALL_TAGS" | while read -r OLD_TAG; do
             COUNT=$((COUNT + 1))
-            if [ $COUNT -gt 5 ]; then
-              echo "Deleting old release (keeping only last 5): $OLD_TAG"
+            if [ $COUNT -gt 1 ]; then
+              echo "Deleting old release (keeping only last 1): $OLD_TAG"
               gh release delete "$OLD_TAG" --yes --cleanup-tag || echo "Failed to delete $OLD_TAG"
             else
               echo "Keeping release: $OLD_TAG"
