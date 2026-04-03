@@ -1254,6 +1254,8 @@ function BuildFateTable(fateObj)
         startTime = fateObj.StartTimeEpoch,
         position = fateObj.Location,
         isBonusFate = fateObj.IsBonus,
+        -- 添加这一行，确保 Progress 有默认值
+        progress = fateObj.Progress or 0
     }
 
     fateTable.npcName = GetFateNpcName(fateTable.fateName)
@@ -2367,6 +2369,7 @@ function TurnOnCombatMods(rotationMode)
             yield("/wrath auto on")
         elseif RotationPlugin == "AEassist" then
             yield("/aepull on")
+            yield("/aestop")
             yield("/aeTargetSelector on")
             yield("/aeTargetSelector mode9")
         end
@@ -2415,7 +2418,7 @@ function TurnOffCombatMods()
         elseif RotationPlugin == "Wrath" then
             yield("/wrath auto off")
         elseif RotationPlugin == "AEassist" then
-            yield("/aepull off")
+            yield("/aestop")
             yield("/aeTargetSelector off")
         end
     end
@@ -3324,6 +3327,10 @@ if configRotationPlugin == "any" then
         RotationPlugin = "BMR"
     elseif HasPlugin("BossMod") then
         RotationPlugin = "VBM"
+    elseif HasPlugin("AEassist") then
+        RotationPlugin = "AEassist"
+    else
+        StopScript = true
     end
 elseif configRotationPlugin == "wrath" and HasPlugin("WrathCombo") then
     RotationPlugin = "Wrath"
@@ -3333,6 +3340,8 @@ elseif configRotationPlugin == "bossmodreborn" and HasPlugin("BossModReborn") th
     RotationPlugin = "BMR"
 elseif configRotationPlugin == "bossmod" and HasPlugin("BossMod") then
     RotationPlugin = "VBM"
+elseif configRotationPlugin == "AeAssist" and HasPlugin("AEassist") then
+    RotationPlugin = "AEassist"
 else
     StopScript = true
 end
