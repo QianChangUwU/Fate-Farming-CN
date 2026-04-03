@@ -10,11 +10,9 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
-# 权限设置：仅授予发布/内容操作权限
 permissions:
   contents: write
 
-# 防止并发冲突，如果有新的运行，自动取消旧的运行
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -24,44 +22,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 检出代码
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. 生成标签（使用环境变量和变量输出）
       - name: Generate unique tag
         run: |
           export TZ="Asia/Shanghai"
-          # 建议在 TAG 结尾加上日期时间，否则 Cleanup 逻辑没有对象可以清理
           TAG_NAME="Fate_Farming_3.1.5_CN-1.4.0_$(date +'%Y%m%d_%H%M%S')"
           echo "TAG=$TAG_NAME" >> $GITHUB_ENV
           echo "CURRENT_TIME=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
           echo "DATE_STAMP=$(date +'%Y%m%d')" >> $GITHUB_ENV
 
-      # 3. 清理旧 Release (使用 GitHub CLI，速度更快)
+      # 修复：只删除超过 5 个的旧 Release，保留最近几个
       - name: Cleanup old releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 获取所有包含特定前缀的 Release
-          gh release list --limit 100 | grep "Fate_Farming" | while read -r line; do
-            OLD_TAG=$(echo "$line" | awk '{print $1}')
-            
-            # 只要不是当前正在生成的这个 TAG，就全部删除
-            if [[ "$OLD_TAG" != "${{ env.TAG }}" ]]; then
-              echo "Deleting old release: $OLD_TAG"
-              gh release delete "$OLD_TAG" --yes --cleanup-tag
+          # 获取所有匹配的 Release，按创建时间排序，保留最新的 5 个
+          echo "Current new tag: ${{ env.TAG }}"
+          
+          # 获取所有 tag，排除当前新的，保留最新的 5 个
+          ALL_TAGS=$(gh release list --limit 100 --json tagName,createdAt \
+            --jq 'sort_by(.createdAt) | reverse | .[].tagName' | \
+            grep "Fate_Farming" | \
+            grep -v "${{ env.TAG }}")
+          
+          # 保留最新的 5 个，删除其余的
+          COUNT=0
+          echo "$ALL_TAGS" | while read -r OLD_TAG; do
+            COUNT=$((COUNT + 1))
+            if [ $COUNT -gt 5 ]; then
+              echo "Deleting old release (keeping only last 5): $OLD_TAG"
+              gh release delete "$OLD_TAG" --yes --cleanup-tag || echo "Failed to delete $OLD_TAG"
+            else
+              echo "Keeping release: $OLD_TAG"
             fi
           done
 
-      # 4. 打包代码
       - name: Create ZIP archive
         run: |
           ZIP_NAME="${{ env.TAG }}.zip"
           zip -r "$ZIP_NAME" . -x '.git/*' -x '.github/*'
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
 
-      # 5. 创建 Release 并上传
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
