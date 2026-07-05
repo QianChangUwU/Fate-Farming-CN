@@ -1,7 +1,7 @@
 --[=====[
 [[SND Metadata]]
 author: baanderson40 || translator:QianChang || orginially pot0to
-version: 3.1.5 CN-1.4.0
+version: 3.1.5 CN-1.5.0
 description: |
   "通过 https://ko-fi.com/baanderson40 支持原作者"
   "通过 https://afdian.com/a/QianChang 支持汉化工作"
@@ -168,6 +168,17 @@ configs:
 *                                  更新日志                                     *
 ********************************************************************************
 
+-> CN-1.5.0 修复10+个严重bug：
+            1. 修复 Dalamud.Log 在条件判断中被误用的问题
+            2. 修复传送确认弹窗英文/中文文本不匹配的问题
+            3. 修复 FATE 确认弹窗文本不匹配的问题（添加中文"推荐等级"匹配）
+            4. 修复错误提示信息英文/中文不匹配的问题
+            5. 修复召唤陆行鸟指令字符串拼接错误
+            6. 修复插件功能检查逻辑错误
+            7. 修复 Addon 就绪检查缺失的问题
+            8. 修复 Repair 函数缺少 /echo 前缀的问题
+            9. 修复插件依赖警告信息不准确的问题
+            10. 修复 LocalPlayer 为 nil 导致脚本崩溃的问题（Svc.ClientState.LocalPlayer → Svc.Objects.LocalPlayer）
 -> 3.1.5 增加了硬件（HW）Fate定义
 -> 3.1.4 修改VBM/BMR作战命令以使用IPCs
 -> 3.1.3 附属脚本重复逻辑更改为仅当为True时才生效

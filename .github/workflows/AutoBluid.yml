@@ -28,7 +28,7 @@ jobs:
       - name: Generate unique tag
         run: |
           export TZ="Asia/Shanghai"
-          TAG_NAME="Fate_Farming_3.1.5_CN-1.4.1_$(date +'%Y%m%d_%H%M%S')"
+          TAG_NAME="Fate_Farming_3.1.5_CN-1.5.0_$(date +'%Y%m%d_%H%M%S')"
           echo "TAG=$TAG_NAME" >> $GITHUB_ENV
           echo "CURRENT_TIME=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
           echo "DATE_STAMP=$(date +'%Y%m%d')" >> $GITHUB_ENV
