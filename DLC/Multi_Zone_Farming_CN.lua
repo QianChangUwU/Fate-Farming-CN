@@ -202,7 +202,7 @@ function TeleportTo(aetheryteName, expectedZoneId)
     end
     -- 等待 TerritoryType 更新为目标区域（最多等10秒）
     local waitCount = 0
-    while Svc.ClientState.TerritoryType ~= expectedZoneId and waitCount < 10 do
+    while tonumber(Svc.ClientState.TerritoryType) ~= expectedZoneId and waitCount < 10 do
         Dalamud.Log("[MultiZone] 等待区域加载... (" .. waitCount .. ")")
         yield("/wait 1")
         waitCount = waitCount + 1
@@ -239,7 +239,7 @@ while true do
         yield("/wait 1")
     elseif not Player.IsBusy and not FateMacroRunning then
         -- 死亡、战斗中、或已在目标区域 → 启动 FateMacro
-        if Svc.Condition[CharacterCondition.dead] or Svc.Condition[CharacterCondition.inCombat] or Svc.ClientState.TerritoryType == ZonesToFarm[FarmingZoneIndex].zoneId then
+        if Svc.Condition[CharacterCondition.dead] or Svc.Condition[CharacterCondition.inCombat] or tonumber(Svc.ClientState.TerritoryType) == ZonesToFarm[FarmingZoneIndex].zoneId then
             Dalamud.Log("[MultiZone] 启动 FateMacro (区域: " .. ZonesToFarm[FarmingZoneIndex].zoneName .. ")")
             yield("/snd run " .. FateMacro)
             FateMacroRunning = true

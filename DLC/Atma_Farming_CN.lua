@@ -139,7 +139,7 @@ function TeleportTo(aetheryteName, expectedZoneId)
     end
     -- 等待 TerritoryType 更新为目标区域（最多等10秒）
     local waitCount = 0
-    while Svc.ClientState.TerritoryType ~= expectedZoneId and waitCount < 10 do
+    while tonumber(Svc.ClientState.TerritoryType) ~= expectedZoneId and waitCount < 10 do
         Dalamud.Log("[Atma Farm] 等待区域加载... (" .. waitCount .. ")")
         yield("/wait 1")
         waitCount = waitCount + 1
@@ -161,7 +161,7 @@ while NextAtmaTable ~= nil do
         Dalamud.Log("[Atma Farm] 死亡或战斗中，等待...")
         yield("/wait 1")
     -- 玩家不在目标区域，需要传送
-    elseif Svc.Objects.LocalPlayer.TerritoryType ~= NextAtmaTable.zoneId then
+    elseif tonumber(Svc.Objects.LocalPlayer.TerritoryType) ~= NextAtmaTable.zoneId then
         local aetheryteName = GetAetheryteName(NextAtmaTable.zoneId)
         if aetheryteName then
             Dalamud.Log("[Atma Farm] 传送到 " .. NextAtmaTable.zoneName)

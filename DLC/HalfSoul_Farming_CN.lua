@@ -169,7 +169,7 @@ function TeleportTo(aetheryteName, expectedZoneId)
     end
     -- 等待 TerritoryType 更新为目标区域（最多等10秒）
     local waitCount = 0
-    while Svc.ClientState.TerritoryType ~= expectedZoneId and waitCount < 10 do
+    while tonumber(Svc.ClientState.TerritoryType) ~= expectedZoneId and waitCount < 10 do
         Dalamud.Log("[HalfSoul Farm] 等待区域加载... (" .. waitCount .. ")")
         yield("/wait 1")
         waitCount = waitCount + 1
@@ -210,7 +210,7 @@ while NextHalfSoul ~= nil do
         Dalamud.Log("[HalfSoul Farm] 死亡或战斗中，等待...")
         yield("/wait 1")
     -- 玩家不在目标区域，需要传送
-    elseif Svc.Objects.LocalPlayer.TerritoryType ~= NextHalfSoul.zoneId then
+    elseif tonumber(Svc.Objects.LocalPlayer.TerritoryType) ~= NextHalfSoul.zoneId then
         local aetheryteName = GetAetheryteName(NextHalfSoul.zoneId)
         if aetheryteName then
             Dalamud.Log("[HalfSoul Farm] 传送到 " .. NextHalfSoul.zoneName)

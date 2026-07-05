@@ -1212,7 +1212,7 @@ end
 
 function SelectNextZone()
     local nextZone = nil
-    local nextZoneId = Svc.ClientState.TerritoryType
+    local nextZoneId = tonumber(Svc.ClientState.TerritoryType)
 
     for i, zone in ipairs(FatesData) do
         if nextZoneId == zone.zoneId then
@@ -2244,7 +2244,7 @@ function AutoBuyGysahlGreens()
     if Inventory.GetItemCount(4868) > 0 then -- dont need to buy
         if Addons.GetAddon("Shop").Ready then
             yield("/callback Shop true -1")
-        elseif Svc.ClientState.TerritoryType == SelectedZone.zoneId then
+        elseif tonumber(Svc.ClientState.TerritoryType) == SelectedZone.zoneId then
             yield("/item 基萨尔野菜")
         else
             State = CharacterState.ready
@@ -2252,7 +2252,7 @@ function AutoBuyGysahlGreens()
         end
         return
     else
-        if Svc.ClientState.TerritoryType ~= 129 then
+        if tonumber(Svc.ClientState.TerritoryType) ~= 129 then
             yield("/vnav stop")
             TeleportTo("利姆萨·罗敏萨下层甲板")
             return
@@ -2753,7 +2753,7 @@ function Ready()
         return
     end
 
-    if Svc.ClientState.TerritoryType ~= SelectedZone.zoneId then
+    if tonumber(Svc.ClientState.TerritoryType) ~= SelectedZone.zoneId then
         if not SelectedZone or not SelectedZone.aetheryteList or not SelectedZone.aetheryteList[1] then
             yield("/echo [FATE] ERROR: No aetheryte found for selected zone. Cannot teleport. Stopping script.")
             StopScript = true
@@ -2896,7 +2896,7 @@ function ExecuteBicolorExchange()
             return
         end
 
-        if Svc.ClientState.TerritoryType ~= SelectedBicolorExchangeData.zoneId then
+        if tonumber(Svc.ClientState.TerritoryType) ~= SelectedBicolorExchangeData.zoneId then
             TeleportTo(SelectedBicolorExchangeData.aetheryteName)
             return
         end
@@ -2954,7 +2954,7 @@ function ProcessRetainers()
             return
         end
 
-        if Svc.ClientState.TerritoryType ~= 129 then
+        if tonumber(Svc.ClientState.TerritoryType) ~= 129 then
             yield("/vnav stop")
             TeleportTo("利姆萨·罗敏萨下层甲板")
             return
@@ -3052,7 +3052,7 @@ function Repair()
                 return
             end
 
-            if Svc.ClientState.TerritoryType ~= SelectedZone.zoneId then
+            if tonumber(Svc.ClientState.TerritoryType) ~= SelectedZone.zoneId then
                 TeleportTo(SelectedZone.aetheryteList[1].aetheryteName)
                 return
             end
@@ -3073,7 +3073,7 @@ function Repair()
                 Dalamud.Log("[FATE] State Change: Ready")
             end
         elseif ShouldAutoBuyDarkMatter then
-            if Svc.ClientState.TerritoryType ~= 129 then
+            if tonumber(Svc.ClientState.TerritoryType) ~= 129 then
                 if Echo == "all" then
                     yield("/echo 没有暗物质了!去海都买点吧.")
                 end
@@ -3110,7 +3110,7 @@ function Repair()
         end
     else
         if needsRepair.Count > 0 then
-            if Svc.ClientState.TerritoryType ~= 129 then
+            if tonumber(Svc.ClientState.TerritoryType) ~= 129 then
                 TeleportTo("利姆萨·罗敏萨下层甲板")
                 return
             end
