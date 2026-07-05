@@ -2531,7 +2531,7 @@ function DoFate()
         WaitingForFateRewards = CurrentFate
         Dalamud.Log("[FATE] WaitingForFateRewards DoFate: " .. tostring(WaitingForFateRewards.fateId))
     end
-    local currentClass = Player.Job
+    local currentClass = Player.Job.Id
     -- switch classes (mostly for continutation fates that pop you directly into the next one)
     if CurrentFate.isBossFate and BossFatesClass ~= nil and currentClass ~= BossFatesClass.classId and not Player.IsBusy then
         TurnOffCombatMods()
@@ -2543,7 +2543,7 @@ function DoFate()
         yield("/gs change " .. MainClass.className)
         yield("/wait 1")
         return
-    elseif InActiveFate() and (CurrentFate.fateObject.MaxLevel < Player.Job.Level) and not Player.IsLevelSynced then
+    elseif InActiveFate() and CurrentFate.fateObject.MaxLevel ~= nil and (CurrentFate.fateObject.MaxLevel < Player.Job.Level) and not Player.IsLevelSynced then
         yield("/lsync")
         yield("/wait 0.5")                                                                                                                                                                                                                                                                                                                                                     -- give it a second to register
     elseif IsFateActive(CurrentFate.fateObject) and not InActiveFate() and CurrentFate.fateObject.Progress ~= nil and CurrentFate.fateObject.Progress < 100 and (GetDistanceToPoint(CurrentFate.position) < CurrentFate.fateObject.Radius + 10) and not Svc.Condition[CharacterCondition.mounted] and not (IPC.vnavmesh.IsRunning() or IPC.vnavmesh.PathfindInProgress()) then -- got pushed out of fate. go back
