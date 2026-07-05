@@ -124,8 +124,8 @@ function GetNextAtmaTable()
     end
 end
 
--- 传送到指定以太水晶
-function TeleportTo(aetheryteName)
+-- 传送到指定以太水晶，并等待区域加载完成
+function TeleportTo(aetheryteName, expectedZoneId)
     yield("/li " .. aetheryteName)
     yield("/wait 1") -- 等待传送施法开始
     while Svc.Condition[CharacterCondition.casting] do
@@ -136,6 +136,13 @@ function TeleportTo(aetheryteName)
     while Svc.Condition[CharacterCondition.betweenAreas] do
         Dalamud.Log("[Atma Farm] 正在传送...")
         yield("/wait 1")
+    end
+    -- 等待 TerritoryType 更新为目标区域（最多等10秒）
+    local waitCount = 0
+    while Svc.ClientState.TerritoryType ~= expectedZoneId and waitCount < 10 do
+        Dalamud.Log("[Atma Farm] 等待区域加载... (" .. waitCount .. ")")
+        yield("/wait 1")
+        waitCount = waitCount + 1
     end
     yield("/wait 1")
 end
@@ -158,7 +165,7 @@ while NextAtmaTable ~= nil do
         local aetheryteName = GetAetheryteName(NextAtmaTable.zoneId)
         if aetheryteName then
             Dalamud.Log("[Atma Farm] 传送到 " .. NextAtmaTable.zoneName)
-            TeleportTo(aetheryteName)
+            TeleportTo(aetheryteName, NextAtmaTable.zoneId)
         else
             Dalamud.Log("[Atma Farm] 无法找到区域 " .. NextAtmaTable.zoneName .. " 的以太水晶!")
             yield("/wait 1")
@@ -169,10 +176,17 @@ while NextAtmaTable ~= nil do
         yield("/snd run " .. FateMacro)
         FateMacroRunning = true
 
-        -- 等待 FateMacro 结束
-        while FateMacroRunning do
+        -- 等待 FateMacro 结束（最多30分钟超时）
+        local fateTimeout = 0
+        while FateMacroRunning and fateTimeout < 1800 do
             yield("/wait 3")
+            fateTimeout = fateTimeout + 3
         end
+        if fateTimeout >= 1800 then
+            Dalamud.Log("[Atma Farm] FateMacro 超时（30分钟），强制继续")
+            yield("/echo [Atma Farm] 警告: FateMacro 运行超时（30分钟），强制继续")
+        end
+        yield("/wait 1") -- 等待游戏状态稳定
 
         Dalamud.Log("[Atma Farm] FateMacro 已停止")
         -- 检查是否已刷够当前魂晶
