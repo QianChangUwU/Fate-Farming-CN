@@ -1,7 +1,7 @@
 --[=====[
 [[SND Metadata]]
 author: 'pot0to || Updated by: Minnu || translator: QianChang'
-version: 2.2.0 CN-1.2.0
+version: 2.2.0 CN-1.2.1
 description: "Multi Zone Farming(多区域Fate Farming) - Fate Farming 配套脚本"
 plugin_dependencies:
 - Lifestream
@@ -86,6 +86,13 @@ configs:
 更新者: Minnu
 汉化: QianChang (https://afdian.com/a/QianChang)
 
+    -> CN-1.2.1 修复重复传送问题
+                1. 传送命令改为 /li tp（显式指定传送，避免Lifestream误解）
+                2. 添加传送冷却（5秒），防止短时间内重复传送导致Lifestream混乱
+                3. 添加 AcceptTeleportOffer 处理传送确认弹窗（SelectYesno）
+                4. GetAetheryteName 中 aetheryte.TerritoryId 比较添加 tonumber() 防止NLua类型问题
+                5. TeleportTo 添加三阶段超时保护（冷却30s/施法60s/区域切换120s）和返回值
+                6. 施法等待时间从1秒增加到2秒，给Lifestream更多处理时间
     -> CN-1.2.0 添加区域选择功能
                 1. 可在设置中自由勾选需要刷取的区域（7.0/6.0/5.0共18个区域）
                 2. 默认仅启用7.0区域，6.0和5.0区域默认关闭
@@ -162,6 +169,8 @@ CharacterCondition = {
     betweenAreas = 45
 }
 
+LastTeleportTimeStamp = 0
+
 -- 当收到聊天消息时触发，检测主脚本是否已停止
 function OnChatMessage()
     local message = TriggerData.message
@@ -174,10 +183,18 @@ function OnChatMessage()
     end
 end
 
+-- 处理传送确认弹窗
+function AcceptTeleportOffer()
+    if Addons.GetAddon("SelectYesno").Ready then
+        yield("/callback SelectYesno true 0")
+        yield("/wait 0.5")
+    end
+end
+
 -- 根据区域ID获取该区域的以太水晶名称
 function GetAetheryteName(zoneId)
     for _, aetheryte in ipairs(Svc.AetheryteList) do
-        if aetheryte.TerritoryId == zoneId then
+        if tonumber(aetheryte.TerritoryId) == zoneId then
             local name = aetheryte.AetheryteData.Value.PlaceName.Value.Name:GetText()
             if name ~= nil then
                 return name
@@ -189,25 +206,51 @@ end
 
 -- 传送到指定以太水晶，并等待区域加载完成
 function TeleportTo(aetheryteName, expectedZoneId)
-    yield("/li " .. aetheryteName)
-    yield("/wait 1") -- 等待传送施法开始
+    AcceptTeleportOffer()
+    local start = os.clock()
+
+    -- 传送冷却检查（防止短时间内重复传送导致Lifestream混乱）
+    while os.clock() - LastTeleportTimeStamp < 5 do
+        Dalamud.Log("[MultiZone] 传送冷却中，等待...")
+        yield("/wait 1")
+        if os.clock() - start > 30 then
+            yield("/echo [MultiZone] 传送失败: 等待冷却超时")
+            return false
+        end
+    end
+
+    yield("/li tp " .. aetheryteName)
+    yield("/wait 2") -- 等待Lifestream处理命令并开始施法
+
     while Svc.Condition[CharacterCondition.casting] do
         Dalamud.Log("[MultiZone] 正在传送施法...")
         yield("/wait 1")
+        if os.clock() - start > 60 then
+            yield("/echo [MultiZone] 传送失败: 施法超时")
+            return false
+        end
     end
     yield("/wait 1") -- 等待施法结束和区域切换之间的微小间隔
     while Svc.Condition[CharacterCondition.betweenAreas] do
         Dalamud.Log("[MultiZone] 正在传送...")
         yield("/wait 1")
+        if os.clock() - start > 120 then
+            yield("/echo [MultiZone] 传送失败: 区域切换超时")
+            return false
+        end
     end
-    -- 等待 TerritoryType 更新为目标区域（最多等10秒）
+
+    -- 等待 TerritoryType 更新为目标区域
     local waitCount = 0
-    while tonumber(Svc.ClientState.TerritoryType) ~= expectedZoneId and waitCount < 10 do
+    while tonumber(Svc.ClientState.TerritoryType) ~= expectedZoneId and waitCount < 15 do
         Dalamud.Log("[MultiZone] 等待区域加载... (" .. waitCount .. ")")
         yield("/wait 1")
         waitCount = waitCount + 1
     end
+
+    LastTeleportTimeStamp = os.clock()
     yield("/wait 1")
+    return true
 end
 
 -- 启动脚本
