@@ -1,6 +1,6 @@
 --[=====[
 [[SND Metadata]]
-author: baanderson40 || translator:QianChang || orginially pot0to
+author: 'baanderson40 || 汉化: QianChang (https://github.com/QianChangUwU) || originally pot0to'
 version: 3.1.5 CN-1.5.0
 description: |
   "通过 https://ko-fi.com/baanderson40 支持原作者"
