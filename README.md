@@ -12,6 +12,8 @@
 | https://github.com/QianChangUwU/Fate-Farming-CN/blob/main/DLC/Multi_Zone_Farming_CN.lua |
 | Atma_Farming DLC 脚本导入链接（古武魂晶）                                                |
 | https://github.com/QianChangUwU/Fate-Farming-CN/blob/main/DLC/Atma_Farming_CN.lua       |
+| HalfSoul_Farming DLC 脚本导入链接（半魂晶，7.0区域）                                     |
+| https://github.com/QianChangUwU/Fate-Farming-CN/blob/main/DLC/HalfSoul_Farming_CN.lua   |
 
 |                                                                            |
 | -------------------------------------------------------------------------- |
@@ -38,6 +40,7 @@ Fate Farming 的部分功能：
 - 可能会有 bug，如果出现了 bug 请创建一个新的 issues
 - **※CN-1.5.0 已修复 10+ 个严重逻辑 bug（包括 LocalPlayer 崩溃、UI 文本不匹配、指令拼接错误等）※**
 - **※Atma_Farming DLC 已汉化并修复适配当前版本 SND（CN-1.0.0）※**
+- **※HalfSoul_Farming DLC 新增半魂晶自动刷取脚本（7.0区域，每种可设置0-3个）※**
 
 ## **※推荐使用 VBM+RSR+DR 自动开启危命任务模块※**
 
