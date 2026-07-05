@@ -1,7 +1,7 @@
 --[=====[
 [[SND Metadata]]
 author: 'pot0to || Updated by: Minnu || translator: QianChang'
-version: 2.1.0 CN-1.1.0
+version: 2.2.0 CN-1.2.0
 description: "Multi Zone Farming(多区域Fate Farming) - Fate Farming 配套脚本"
 plugin_dependencies:
 - Lifestream
@@ -11,6 +11,60 @@ configs:
   FateMacro:
     description: "Fate Farming脚本在SND中的名字(如果你用GitHub导入，默认为'Fate Farming')"
     default: Fate Farming
+  奥阔帕恰山:
+    description: "是否在奥阔帕恰山刷FATE（7.0区域）"
+    default: true
+  克扎玛乌卡湿地:
+    description: "是否在克扎玛乌卡湿地刷FATE（7.0区域）"
+    default: true
+  亚克特尔树海:
+    description: "是否在亚克特尔树海刷FATE（7.0区域）"
+    default: true
+  夏劳尼荒野:
+    description: "是否在夏劳尼荒野刷FATE（7.0区域）"
+    default: true
+  遗产之地:
+    description: "是否在遗产之地刷FATE（7.0区域）"
+    default: true
+  活着的记忆:
+    description: "是否在活着的记忆刷FATE（7.0区域）"
+    default: true
+  迷津:
+    description: "是否在迷津刷FATE（6.0区域）"
+    default: false
+  萨维奈岛:
+    description: "是否在萨维奈岛刷FATE（6.0区域）"
+    default: false
+  加雷马:
+    description: "是否在加雷马刷FATE（6.0区域）"
+    default: false
+  叹息海:
+    description: "是否在叹息海刷FATE（6.0区域）"
+    default: false
+  天外天垓:
+    description: "是否在天外天垓刷FATE（6.0区域）"
+    default: false
+  厄尔庇斯:
+    description: "是否在厄尔庇斯刷FATE（6.0区域）"
+    default: false
+  雷克兰德:
+    description: "是否在雷克兰德刷FATE（5.0区域）"
+    default: false
+  珂露西亚岛:
+    description: "是否在珂露西亚岛刷FATE（5.0区域）"
+    default: false
+  安穆·艾兰:
+    description: "是否在安穆·艾兰刷FATE（5.0区域）"
+    default: false
+  伊尔美格:
+    description: "是否在伊尔美格刷FATE（5.0区域）"
+    default: false
+  拉凯提卡大森林:
+    description: "是否在拉凯提卡大森林刷FATE（5.0区域）"
+    default: false
+  黑风海:
+    description: "是否在黑风海刷FATE（5.0区域）"
+    default: false
 
 [[End Metadata]]
 --]=====]
@@ -19,17 +73,24 @@ configs:
 
 ********************************************************************************
 *                             多区域 Fate Farming                               *
-*                              Version 2.1.0 CN                                 *
+*                              Version 2.2.0 CN                                 *
 ********************************************************************************
 
 多区域 farming 脚本，需配合 `Fate_Farming_CN.lua` 使用。本脚本会依次
 遍历区域列表，在当前区域刷 FATE 直到没有可用的 FATE（通过双色宝石数量
 是否增加来判断），然后传送到下一个区域并重新启动 Fate Farming 脚本。
 
+可在设置中自由勾选需要刷取的区域（7.0/6.0/5.0），默认仅启用7.0区域。
+
 创建者: pot0to (https://ko-fi.com/pot0to)
 更新者: Minnu
 汉化: QianChang (https://afdian.com/a/QianChang)
 
+    -> CN-1.2.0 添加区域选择功能
+                1. 可在设置中自由勾选需要刷取的区域（7.0/6.0/5.0共18个区域）
+                2. 默认仅启用7.0区域，6.0和5.0区域默认关闭
+                3. 启动时打印已选区域列表
+                4. 无已选区域时提示并退出
     -> CN-1.1.0 汉化并修复适配当前版本 SND
                 1. 修复 GetAetheryteName 使用 Excel.GetRow 不可靠的问题，改用 Svc.AetheryteList
                 2. 添加 LocalPlayer nil 检查防止加载画面时脚本崩溃
@@ -49,34 +110,41 @@ configs:
 ********************************************************************************
 ]]
 
-FateMacro   = Config.Get("FateMacro")
+FateMacro = Config.Get("FateMacro")
 
-ZonesToFarm = {
-    --7.0地图
-    { zoneName = "奥阔帕恰山", zoneId = 1187 },
-    { zoneName = "克扎玛乌卡湿地", zoneId = 1188 },
-    { zoneName = "亚克特尔树海", zoneId = 1189 },
-    { zoneName = "夏劳尼荒野", zoneId = 1190 },
-    { zoneName = "遗产之地", zoneId = 1191 },
-    { zoneName = "活着的记忆", zoneId = 1192 }
+-- 所有可用区域（7.0/6.0/5.0）
+AllZones = {
+    -- 7.0地图
+    { zoneName = "奥阔帕恰山",     zoneId = 1187, configKey = "奥阔帕恰山" },
+    { zoneName = "克扎玛乌卡湿地", zoneId = 1188, configKey = "克扎玛乌卡湿地" },
+    { zoneName = "亚克特尔树海",   zoneId = 1189, configKey = "亚克特尔树海" },
+    { zoneName = "夏劳尼荒野",     zoneId = 1190, configKey = "夏劳尼荒野" },
+    { zoneName = "遗产之地",       zoneId = 1191, configKey = "遗产之地" },
+    { zoneName = "活着的记忆",     zoneId = 1192, configKey = "活着的记忆" },
+    -- 6.0地图
+    { zoneName = "迷津",           zoneId = 956,  configKey = "迷津" },
+    { zoneName = "萨维奈岛",       zoneId = 957,  configKey = "萨维奈岛" },
+    { zoneName = "加雷马",         zoneId = 958,  configKey = "加雷马" },
+    { zoneName = "叹息海",         zoneId = 959,  configKey = "叹息海" },
+    { zoneName = "天外天垓",       zoneId = 960,  configKey = "天外天垓" },
+    { zoneName = "厄尔庇斯",       zoneId = 961,  configKey = "厄尔庇斯" },
+    -- 5.0地图
+    { zoneName = "雷克兰德",       zoneId = 813,  configKey = "雷克兰德" },
+    { zoneName = "珂露西亚岛",     zoneId = 814,  configKey = "珂露西亚岛" },
+    { zoneName = "安穆·艾兰",      zoneId = 815,  configKey = "安穆·艾兰" },
+    { zoneName = "伊尔美格",       zoneId = 816,  configKey = "伊尔美格" },
+    { zoneName = "拉凯提卡大森林", zoneId = 817,  configKey = "拉凯提卡大森林" },
+    { zoneName = "黑风海",         zoneId = 818,  configKey = "黑风海" }
 }
 
+-- 根据设置筛选已启用的区域
+ZonesToFarm = {}
+for _, zone in ipairs(AllZones) do
+    if Config.Get(zone.configKey) then
+        table.insert(ZonesToFarm, zone)
+    end
+end
 
---      6.0地图
---    { zoneName = "迷津", zoneId = 956 },
---    { zoneName = "萨维奈岛", zoneId = 957 },
---    { zoneName = "加雷马", zoneId = 958 },
---    { zoneName = "叹息海", zoneId = 959 },
---    { zoneName = "天外天垓", zoneId = 960 },
---    { zoneName = "厄尔庇斯", zoneId = 961 },
-
---      5.0地图
---    { zoneName = "雷克兰德", zoneId = 813 },
---    { zoneName = "珂露西亚岛", zoneId = 814 },
---    { zoneName = "安穆·艾兰", zoneId = 815 },
---    { zoneName = "伊尔美格", zoneId = 816 },
---    { zoneName = "拉凯提卡大森林", zoneId = 817 },
---    { zoneName = "黑风海", zoneId = 818 },
 --#endregion Settings
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -137,11 +205,25 @@ end
 
 -- 启动脚本
 yield("/at y")
+
+-- 检查是否有已选区域
+if #ZonesToFarm == 0 then
+    yield("/echo [MultiZone] 错误: 未选择任何区域! 请在设置中至少启用一个区域。")
+    return
+end
+
 FarmingZoneIndex = 1
 OldBicolorGemCount = Inventory.GetItemCount(26807)
 
-Dalamud.Log("[MultiZone] 开始多区域 Fate Farming")
-yield("/echo [MultiZone] 开始多区域 Fate Farming! 起始区域: " .. ZonesToFarm[FarmingZoneIndex].zoneName)
+-- 打印已选区域列表
+Dalamud.Log("[MultiZone] === 已选区域列表 ===")
+yield("/echo [MultiZone] 开始多区域 Fate Farming! 共选择 " .. #ZonesToFarm .. " 个区域:")
+for i, zone in ipairs(ZonesToFarm) do
+    Dalamud.Log("[MultiZone] " .. i .. ". " .. zone.zoneName .. " (ID: " .. zone.zoneId .. ")")
+    yield("/echo [MultiZone]   " .. i .. ". " .. zone.zoneName)
+end
+Dalamud.Log("[MultiZone] ======================")
+yield("/echo [MultiZone] 起始区域: " .. ZonesToFarm[FarmingZoneIndex].zoneName)
 
 while true do
     -- 防护: 玩家角色未加载时等待
