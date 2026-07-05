@@ -1093,7 +1093,7 @@ function MoveToTargetHitbox()
     if Svc.Targets.Target == nil then
         return
     end
-    local playerPos = Svc.ClientState.LocalPlayer.Position
+    local playerPos = Svc.Objects.LocalPlayer.Position
     local targetPos = Svc.Targets.Target.Position
     local distance = GetDistanceToTarget()
     if distance == 0 then return end
@@ -1426,7 +1426,7 @@ end
 function AcceptNPCFateOrRejectOtherYesno()
     if Addons.GetAddon("SelectYesno").Ready then
         local dialogBox = GetNodeText("SelectYesno", 1, 2)
-        if type(dialogBox) == "string" and dialogBox:find("The recommended level for this FATE is") then
+        if type(dialogBox) == "string" and (dialogBox:find("The recommended level for this FATE is") or dialogBox:find("推荐等级")) then
             yield("/callback SelectYesno true 0") --accept fate
         else
             yield("/callback SelectYesno true 1") --decline all other boxes
@@ -1446,7 +1446,8 @@ function DistanceBetween(pos1, pos2)
 end
 
 function GetDistanceToPoint(vec3)
-    return DistanceBetween(Svc.ClientState.LocalPlayer.Position, vec3)
+    if Svc.Objects.LocalPlayer == nil then return math.maxinteger end
+    return DistanceBetween(Svc.Objects.LocalPlayer.Position, vec3)
 end
 
 function GetDistanceToTarget()
@@ -1466,7 +1467,8 @@ function GetDistanceToTargetFlat()
 end
 
 function GetDistanceToPointFlat(vec3)
-    return DistanceBetweenFlat(Svc.ClientState.LocalPlayer.Position, vec3)
+    if Svc.Objects.LocalPlayer == nil then return math.maxinteger end
+    return DistanceBetweenFlat(Svc.Objects.LocalPlayer.Position, vec3)
 end
 
 function DistanceBetweenFlat(pos1, pos2)
@@ -1601,6 +1603,8 @@ function AcceptTeleportOfferLocation(destinationAetheryte)
         local teleportOfferMessage = GetNodeText("SelectYesno", 1, 2)
         if type(teleportOfferMessage) == "string" then
             local teleportOfferLocation = teleportOfferMessage:match("Accept Teleport to (.+)%?")
+                or teleportOfferMessage:match("传送到「(.+)」")
+                or teleportOfferMessage:match("传送到(.+)？")
             if teleportOfferLocation ~= nil then
                 if string.lower(teleportOfferLocation) == string.lower(destinationAetheryte) then
                     yield("/callback SelectYesno true 0") -- accept teleport
@@ -1673,7 +1677,7 @@ function ChangeInstance()
     end
 
     yield("/target 以太之光") -- search for nearby aetheryte
-    if Svc.Targets.Target == nil or GetTargetName() ~= "aetheryte" then -- if no aetheryte within targeting range, teleport to it
+    if Svc.Targets.Target == nil or GetTargetName() ~= "以太之光" then -- if no aetheryte within targeting range, teleport to it
         Dalamud.Log("[FATE] Aetheryte not within targetable range")
         local closestAetheryte = nil
         local closestAetheryteDistance = math.maxinteger
@@ -1776,17 +1780,20 @@ function FlyBackToAetheryte()
         return
     end
 
-    local closestAetheryte = GetClosestAetheryte(Svc.ClientState.LocalPlayer.Position, 0)
+    local closestAetheryte = GetClosestAetheryte(Svc.Objects.LocalPlayer.Position, 0)
     if closestAetheryte == nil then
         DownTimeWaitAtNearestAetheryte = false
         yield("/echo Could not find aetheryte in the area. Turning off feature to fly back to aetheryte.")
         return
     end
     -- if you get any sort of error while flying back, then just abort and tp back
-    if Addons.GetAddon("_TextError").Ready and GetNodeText("_TextError", 1) == "Your mount can fly no higher." then
-        yield("/vnav stop")
-        TeleportTo(closestAetheryte.aetheryteName)
-        return
+    if Addons.GetAddon("_TextError").Ready then
+        local flyErrorText = GetNodeText("_TextError", 1)
+        if flyErrorText == "Your mount can fly no higher." or (type(flyErrorText) == "string" and (flyErrorText:find("无法飞得更高") or flyErrorText:find("飞行高度"))) then
+            yield("/vnav stop")
+            TeleportTo(closestAetheryte.aetheryteName)
+            return
+        end
     end
 
     yield("/target 以太之光")
@@ -1828,7 +1835,7 @@ end
 
 HasFlownUpYet = false
 function MoveToRandomNearbySpot(minDist, maxDist)
-    local playerPos = Svc.ClientState.LocalPlayer.Position
+    local playerPos = Svc.Objects.LocalPlayer.Position
     local angle = math.random() * 2 * math.pi
     local distance = minDist + math.random() * (maxDist - minDist)
     local dx = math.cos(angle) * distance
@@ -1877,7 +1884,7 @@ function Dismount()
         if now - LastStuckCheckTime > 1 then
             if Svc.Condition[CharacterCondition.flying] and GetDistanceToPoint(LastStuckCheckPosition) < 2 then
                 Dalamud.Log("[FATE] Unable to dismount here. Moving to another spot.")
-                local random = RandomAdjustCoordinates(Svc.ClientState.LocalPlayer.Position, 10)
+                local random = RandomAdjustCoordinates(Svc.Objects.LocalPlayer.Position, 10)
                 local nearestFloor = IPC.vnavmesh.PointOnFloor(random, true, 100)
                 if nearestFloor ~= nil then
                     IPC.vnavmesh.PathfindAndMoveTo(nearestFloor,
@@ -1887,7 +1894,7 @@ function Dismount()
             end
 
             LastStuckCheckTime = now
-            LastStuckCheckPosition = Svc.ClientState.LocalPlayer.Position
+            LastStuckCheckPosition = Svc.Objects.LocalPlayer.Position
         end
     elseif Svc.Condition[CharacterCondition.mounted] then
         yield('/mount')
@@ -2036,12 +2043,12 @@ function MoveToFate()
                 yield("/vnav stop")
                 yield("/wait 1")
                 Dalamud.Log("[FATE] Antistuck")
-                local up10 = Svc.ClientState.LocalPlayer.Position + Vector3(0, 10, 0)
+                local up10 = Svc.Objects.LocalPlayer.Position + Vector3(0, 10, 0)
                 IPC.vnavmesh.PathfindAndMoveTo(up10, Svc.Condition[CharacterCondition.flying] and SelectedZone.flying) -- fly up 10 then try again
             end
 
             LastStuckCheckTime = now
-            LastStuckCheckPosition = Svc.ClientState.LocalPlayer.Position
+            LastStuckCheckPosition = Svc.Objects.LocalPlayer.Position
         end
         return
     end
@@ -2211,7 +2218,7 @@ function SummonChocobo()
         if Inventory.GetItemCount(4868) > 0 then
             yield("/item 基萨尔野菜")
             yield("/wait 3")
-            yield('/cac "' .. ChocoboStance .. ' stance"')
+            yield('/cac ' .. ChocoboStance)
         elseif ShouldAutoBuyGysahlGreens then
             State = CharacterState.autoBuyGysahlGreens
             Dalamud.Log("[FATE] State Change: AutoBuyGysahlGreens")
@@ -2280,8 +2287,8 @@ function GetTargetHitboxRadius()
 end
 
 function GetPlayerHitboxRadius()
-    if Svc.ClientState.LocalPlayer ~= nil then
-        return Svc.ClientState.LocalPlayer.HitboxRadius
+    if Svc.Objects.LocalPlayer ~= nil then
+        return Svc.Objects.LocalPlayer.HitboxRadius
     else
         return 0
     end
@@ -2538,7 +2545,8 @@ function DoFate()
     elseif not IsFateActive(CurrentFate.fateObject) or CurrentFate.fateObject.Progress == 100 then
         yield("/vnav stop")
         ClearTarget()
-        if not Dalamud.Log("[FATE] HasContintuation check") and CurrentFate.hasContinuation then
+        Dalamud.Log("[FATE] HasContintuation check")
+        if CurrentFate.hasContinuation then
             LastFateEndTime = os.clock()
             State = CharacterState.waitForContinuation
             Dalamud.Log("[FATE] State Change: WaitForContinuation")
@@ -2776,7 +2784,7 @@ function Ready()
             end
             return
         end
-        if DownTimeWaitAtNearestAetheryte and (Svc.Targets.Target == nil or GetTargetName() ~= "aetheryte" or GetDistanceToTarget() > 20) then
+        if DownTimeWaitAtNearestAetheryte and (Svc.Targets.Target == nil or GetTargetName() ~= "以太之光" or GetDistanceToTarget() > 20) then
             State = CharacterState.flyBackToAetheryte
             Dalamud.Log("[FATE] State Change: FlyBackToAetheryte")
             return
@@ -2790,7 +2798,7 @@ function Ready()
 
 
     if NextFate == nil and shouldWaitForBonusBuff and DownTimeWaitAtNearestAetheryte then
-        if Svc.Targets.Target == nil or GetTargetName() ~= "aetheryte" or GetDistanceToTarget() > 20 then
+        if Svc.Targets.Target == nil or GetTargetName() ~= "以太之光" or GetDistanceToTarget() > 20 then
             State = CharacterState.flyBackToAetheryte
             Dalamud.Log("[FATE] State Change: FlyBackToAetheryte")
         else
@@ -3056,7 +3064,7 @@ function Repair()
         elseif ShouldAutoBuyDarkMatter then
             if Svc.ClientState.TerritoryType ~= 129 then
                 if Echo == "all" then
-                    yield("没有暗物质了!去海都买点吧.")
+                    yield("/echo 没有暗物质了!去海都买点吧.")
                 end
                 TeleportTo("利姆萨·罗敏萨下层甲板")
                 return
@@ -3079,7 +3087,7 @@ function Repair()
                     yield("/interact")
                 elseif Addons.GetAddon("SelectYesno").Ready then
                     yield("/callback SelectYesno true 0")
-                elseif Addons.GetAddon("Shop") then
+                elseif Addons.GetAddon("Shop").Ready then
                     yield("/callback Shop true 0 40 99")
                 end
             end
@@ -3167,7 +3175,8 @@ function EorzeaTimeToUnixTime(eorzeaTime)
 end
 
 function HasStatusId(statusId)
-    local statusList = Svc.ClientState.LocalPlayer.StatusList
+    if Svc.Objects.LocalPlayer == nil then return false end
+    local statusList = Svc.Objects.LocalPlayer.StatusList
     if statusList == nil then
         return false
     end
@@ -3300,7 +3309,7 @@ GotCollectionsFullCredit         = false
 WaitingForFateRewards            = nil
 LastFateEndTime                  = os.clock()
 LastStuckCheckTime               = os.clock()
-LastStuckCheckPosition           = Player.Entity.Position
+LastStuckCheckPosition           = Player.Entity ~= nil and Player.Entity.Position or Vector3(0, 0, 0)
 MainClass                        = Player.Job
 BossFatesClass                   = nil
 
@@ -3480,6 +3489,13 @@ if CompanionScriptMode then
 end
 
 while not StopScript do
+    -- Guard: skip iteration if player character is not loaded (e.g. during loading screens)
+    if Svc.Objects.LocalPlayer == nil then
+        Dalamud.Log("[FATE] LocalPlayer is nil, waiting...")
+        yield("/wait 1")
+        goto continue
+    end
+
     local nearestFate = Fates.GetNearestFate()
     if not IPC.vnavmesh.IsReady() then
         yield("/echo [FATE] Waiting for vnavmesh to build...")
@@ -3542,6 +3558,7 @@ while not StopScript do
         State()
     end
     yield("/wait 0.25")
+    ::continue::
 end
 yield("/vnav stop")
 
